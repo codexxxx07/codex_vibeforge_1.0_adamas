@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import DashboardLayout from './components/layout/DashboardLayout'
 import Dashboard from './pages/Dashboard'
 import Onboarding from './pages/Onboarding'
@@ -44,6 +44,37 @@ const pages = {
 
 export default function App() {
   const [page, setPage] = useState('dashboard')
+  const [authChecked, setAuthChecked] = useState(false)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const urlAuth = params.get('auth') === 'true'
+    const urlRole = params.get('role')
+    const localAuth = localStorage.getItem('isAuthenticated') === 'true'
+    const localRole = localStorage.getItem('role')
+
+    console.log('[Student] urlAuth:', urlAuth, 'urlRole:', urlRole)
+    console.log('[Student] localAuth:', localAuth, 'localRole:', localRole)
+
+    const isAuthed = urlAuth || localAuth
+    const role = urlRole || localRole
+
+    if (isAuthed && role === 'student') {
+      localStorage.setItem('isAuthenticated', 'true')
+      localStorage.setItem('role', 'student')
+      if (urlAuth) {
+        window.history.replaceState({}, '', window.location.pathname)
+        console.log('[Student] Auth passed via URL, persisted to localStorage, URL cleaned')
+      }
+      setAuthChecked(true)
+    } else {
+      console.log('[Student] Auth FAILED, redirecting to landing')
+      window.location.href = 'http://localhost:5173'
+    }
+  }, [])
+
+  if (!authChecked) return null
+
   const PageComponent = pages[page] || Dashboard
 
   return (

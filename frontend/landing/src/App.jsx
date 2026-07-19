@@ -1,6 +1,116 @@
 import { useState } from "react";
 import { useTheme } from "./ThemeContext";
 
+// ─── Hardcoded credentials ───────────────────────────────────────────────────
+const CREDENTIALS = {
+  student: { email: "student@college.edu", password: "student123", url: "http://localhost:5174" },
+  mentor:  { email: "mentor@college.edu",  password: "mentor123",  url: "http://localhost:5175" },
+  admin:   { email: "admin@college.edu",   password: "admin123",   url: "http://localhost:5176" },
+};
+
+// ─── Login Modal ─────────────────────────────────────────────────────────────
+function LoginModal({ portalId, portalTitle, portalColor, onClose }) {
+  const [email, setEmail]       = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError]       = useState("");
+
+  function handleLogin(e) {
+    e.preventDefault();
+    const cred = CREDENTIALS[portalId];
+    if (email === cred.email && password === cred.password) {
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("role", portalId);
+      console.log(`[Login] Auth set for role=${portalId}, redirecting to ${cred.url}`);
+      window.location.href = `${cred.url}?role=${portalId}&auth=true`;
+    } else {
+      setError("Invalid credentials");
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div
+        className="w-full max-w-sm rounded-2xl p-8 relative"
+        style={{
+          background: "var(--color-bg-card)",
+          border: "1px solid var(--color-border)",
+          borderTop: `3px solid ${portalColor}`,
+        }}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg"
+          style={{ color: "var(--color-text-muted)" }}
+          aria-label="Close"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+
+        <h2 className="text-xl font-bold mb-1" style={{ color: portalColor }}>{portalTitle}</h2>
+        <p className="text-sm mb-6" style={{ color: "var(--color-text-muted)" }}>Sign in to continue</p>
+
+        <form onSubmit={handleLogin} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--color-text-muted)" }}>
+              College Email ID
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); setError(""); }}
+              placeholder="you@college.edu"
+              required
+              className="px-4 py-2.5 rounded-xl text-sm outline-none w-full"
+              style={{
+                background: "var(--color-bg-primary)",
+                border: "1px solid var(--color-border)",
+                color: "var(--color-text-primary)",
+              }}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--color-text-muted)" }}>
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => { setPassword(e.target.value); setError(""); }}
+              placeholder="••••••••"
+              required
+              className="px-4 py-2.5 rounded-xl text-sm outline-none w-full"
+              style={{
+                background: "var(--color-bg-primary)",
+                border: "1px solid var(--color-border)",
+                color: "var(--color-text-primary)",
+              }}
+            />
+          </div>
+
+          {error && (
+            <p className="text-sm font-medium" style={{ color: "#EF4444" }}>{error}</p>
+          )}
+
+          <button
+            type="submit"
+            className="mt-1 px-4 py-2.5 rounded-xl text-sm font-bold transition-all hover:opacity-90"
+            style={{ background: portalColor, color: "#fff" }}
+          >
+            Login
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 function ThemeToggle() {
   const { dark, toggle } = useTheme();
   return (
@@ -36,7 +146,6 @@ const portals = [
     desc: "Your learning command center. Attend live classes, practice in labs, track progress, solve doubts, and earn certificates.",
     features: ["Live Classes", "Practice Lab", "Doubt Solving", "Progress Tracking", "Assignments", "Certificates"],
     color: "#1D7874",
-    href: "/student-web",
   },
   {
     id: "mentor",
@@ -44,7 +153,6 @@ const portals = [
     desc: "Teach, guide, and grow. Build courses, conduct live sessions, grade submissions, and analyze student performance.",
     features: ["Course Builder", "Live Class Control", "Grading Dashboard", "Student Analytics", "Schedule", "Resources"],
     color: "#EE964B",
-    href: "/mentor-web",
   },
   {
     id: "admin",
@@ -52,7 +160,6 @@ const portals = [
     desc: "Full platform command. Manage users, batches, payments, content, and access deep analytics.",
     features: ["User Management", "Batch Control", "Payments", "Content Control", "Analytics", "Reports"],
     color: "#F4D35E",
-    href: "/admin-panel",
   },
 ];
 
@@ -68,9 +175,20 @@ const features = [
 export default function App() {
   const { dark, toggle } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activePortal, setActivePortal] = useState(null); // { id, title, color }
 
   return (
     <div style={{ backgroundColor: "var(--color-bg-primary)", color: "var(--color-text-primary)", minHeight: "100vh" }}>
+
+      {/* Login Modal */}
+      {activePortal && (
+        <LoginModal
+          portalId={activePortal.id}
+          portalTitle={activePortal.title}
+          portalColor={activePortal.color}
+          onClose={() => setActivePortal(null)}
+        />
+      )}
       {/* Navbar */}
       <nav
         className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-8 py-4"
@@ -209,8 +327,8 @@ export default function App() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {portals.map((p) => (
-              <a key={p.id} href={p.href} className="glass-card p-6 sm:p-8 no-underline block group hover:-translate-y-2"
-                style={{ borderTop: `3px solid ${p.color}` }}>
+              <button key={p.id} onClick={() => setActivePortal(p)} className="glass-card p-6 sm:p-8 block group hover:-translate-y-2 text-left w-full"
+                style={{ borderTop: `3px solid ${p.color}`, cursor: "pointer" }}>
                 <h3 className="text-xl font-bold mb-3 group-hover:opacity-80 transition-opacity" style={{ color: p.color }}>{p.title}</h3>
                 <p className="text-sm mb-5 leading-relaxed" style={{ color: "var(--color-text-muted)" }}>{p.desc}</p>
                 <div className="flex flex-wrap gap-2 mb-6">
@@ -222,7 +340,7 @@ export default function App() {
                 <span className="inline-flex items-center gap-1 text-sm font-semibold transition-all group-hover:gap-2" style={{ color: "var(--color-accent)" }}>
                   Open Portal →
                 </span>
-              </a>
+              </button>
             ))}
           </div>
         </div>
