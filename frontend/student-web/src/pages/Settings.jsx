@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTheme } from '../ThemeContext'
 
 export default function Settings() {
-  const { darkMode, toggleTheme } = useTheme()
+  const { dark: darkMode, toggle: toggleTheme } = useTheme()
   const [notifications, setNotifications] = useState({ email: true, push: true, sms: false })
   const [lowDataMode, setLowDataMode] = useState(false)
   const [audioOnly, setAudioOnly] = useState(false)
@@ -118,21 +118,21 @@ export default function Settings() {
               <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>Profile</p>
               <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>Update your name, email, and photo</p>
             </div>
-            <button className="text-xs font-medium px-3 py-1.5 rounded-lg text-white" style={{ background: 'var(--color-accent)' }}>Edit</button>
+            <button onClick={() => alert('Opening profile editor... Update your name, email, and photo.')} className="text-xs font-medium px-3 py-1.5 rounded-lg text-white" style={{ background: 'var(--color-accent)' }}>Edit</button>
           </div>
           <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'var(--color-accent-light)' }}>
             <div>
               <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>Password & Security</p>
               <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>Change password, 2FA, session management</p>
             </div>
-            <button className="text-xs font-medium px-3 py-1.5 rounded-lg text-white" style={{ background: 'var(--color-accent)' }}>Manage</button>
+            <button onClick={() => alert('Opening password & security settings... Change password, 2FA, session management.')} className="text-xs font-medium px-3 py-1.5 rounded-lg text-white" style={{ background: 'var(--color-accent)' }}>Manage</button>
           </div>
           <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'rgba(239,68,68,0.08)' }}>
             <div>
               <p className="text-sm font-medium" style={{ color: '#EF4444' }}>Delete Account</p>
               <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>Permanently delete your account and all data</p>
             </div>
-            <button className="text-xs font-medium px-3 py-1.5 rounded-lg text-white" style={{ background: '#EF4444' }}>Delete</button>
+            <button onClick={() => { if (confirm('Are you sure you want to permanently delete your account? This action cannot be undone.')) alert('Account deletion request submitted. You will receive a confirmation email.') }} className="text-xs font-medium px-3 py-1.5 rounded-lg text-white" style={{ background: '#EF4444' }}>Delete</button>
           </div>
         </div>
       </div>
@@ -148,7 +148,7 @@ export default function Settings() {
                 <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>234 MB — clear to free space</p>
               </div>
             </div>
-            <button className="text-xs font-medium px-3 py-1.5 rounded-lg" style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>Clear</button>
+            <button onClick={() => { alert('Cached data cleared! Freed 234 MB.'); }} className="text-xs font-medium px-3 py-1.5 rounded-lg" style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>Clear</button>
           </div>
           <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'var(--color-accent-light)' }}>
             <div className="flex items-center gap-3">
@@ -158,7 +158,7 @@ export default function Settings() {
                 <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>3 files — 1.2 GB</p>
               </div>
             </div>
-            <button className="text-xs font-medium px-3 py-1.5 rounded-lg" style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>Manage</button>
+            <button onClick={() => alert('Opening downloads manager... 3 files (1.2 GB). Tap a recording to delete or re-download.')} className="text-xs font-medium px-3 py-1.5 rounded-lg" style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>Manage</button>
           </div>
         </div>
       </div>

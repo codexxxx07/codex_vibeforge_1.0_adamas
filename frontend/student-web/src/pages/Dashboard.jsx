@@ -8,10 +8,10 @@ const stats = [
 ]
 
 const quickActions = [
-  { label: 'Resume Class', icon: 'play', desc: 'VLSI Design - Module 4' },
-  { label: 'Practice Lab', icon: 'terminal', desc: 'DSA - Arrays & Linked Lists' },
-  { label: 'Check Doubts', icon: 'message', desc: '2 unresolved' },
-  { label: 'View PYQ', icon: 'book', desc: '2024 Question Papers' },
+  { label: 'Resume Class', icon: 'play', desc: 'VLSI Design - Module 4', page: 'live-class' },
+  { label: 'Practice Lab', icon: 'terminal', desc: 'DSA - Arrays & Linked Lists', page: 'practice-lab' },
+  { label: 'Check Doubts', icon: 'message', desc: '2 unresolved', page: 'doubts' },
+  { label: 'View PYQ', icon: 'book', desc: '2024 Question Papers', page: 'pyq' },
 ]
 
 const courses = [
@@ -34,7 +34,7 @@ const activities = [
   { text: 'Completed Embedded Lab', time: 'Yesterday' },
 ]
 
-export default function Dashboard() {
+export default function Dashboard({ setPage }) {
   const [studentName] = useState('Alex')
 
   return (
@@ -72,7 +72,7 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {quickActions.map((action, i) => (
-          <button key={i} className="glass-card p-5 text-left group cursor-pointer">
+          <button key={i} onClick={() => setPage && setPage(action.page)} className="glass-card p-5 text-left group cursor-pointer">
             <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-3 transition-colors" style={{ background: 'var(--color-accent-light)' }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 {action.icon === 'play' && <><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></>}

@@ -111,7 +111,7 @@ export default function Recordings() {
                   <select className="text-xs px-2 py-1 rounded-lg outline-none" style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)', border: '1px solid var(--color-border)' }}>
                     <option>1x</option><option>1.5x</option><option>2x</option>
                   </select>
-                  <button className="p-2 rounded-lg flex items-center gap-1 text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>
+                  <button onClick={() => alert(`Downloading "${selected.title}"...`)} className="p-2 rounded-lg flex items-center gap-1 text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     Download
                   </button>

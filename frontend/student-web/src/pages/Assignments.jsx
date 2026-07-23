@@ -24,6 +24,8 @@ export default function Assignments() {
   const [mcqAnswers, setMcqAnswers] = useState({})
   const [mcqSubmitted, setMcqSubmitted] = useState(false)
   const [fileUpload, setFileUpload] = useState(null)
+  const [codeSubmission, setCodeSubmission] = useState('')
+  const [shellSubmitted, setShellSubmitted] = useState(false)
 
   const filtered = activeTab === 'all' ? assignments : assignments.filter(a => a.status === activeTab)
 
@@ -164,10 +166,12 @@ export default function Assignments() {
                     <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Your code will be tested against {selected.testCases} hidden test cases.</p>
                   </div>
                   <textarea rows={8} placeholder="// Paste your C code here"
+                    value={codeSubmission}
+                    onChange={e => setCodeSubmission(e.target.value)}
                     className="w-full p-4 font-mono text-sm rounded-xl outline-none resize-none"
                     style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)' }}
                     spellCheck={false} />
-                  <button className="px-6 py-2.5 rounded-xl text-sm font-medium text-white transition-all" style={{ background: 'var(--color-accent)' }}>
+                  <button onClick={() => { if (!codeSubmission.trim()) { alert('Please paste your code before submitting.'); return } alert('Code submitted successfully! Running against test cases...'); setCodeSubmission(''); setSelected(prev => ({ ...prev, status: 'submitted' })) }} className="px-6 py-2.5 rounded-xl text-sm font-medium text-white transition-all" style={{ background: 'var(--color-accent)' }}>
                     Submit Code
                   </button>
                 </div>
@@ -193,7 +197,7 @@ export default function Assignments() {
                       </label>
                     )}
                   </div>
-                  <button className="px-6 py-2.5 rounded-xl text-sm font-medium text-white transition-all" style={{ background: 'var(--color-accent)' }}>
+                  <button onClick={() => { if (!fileUpload) { alert('Please upload a .sh file before submitting.'); return } alert(`Shell script "${fileUpload.name}" submitted successfully! Running against test cases...`); setShellSubmitted(true); setSelected(prev => ({ ...prev, status: 'submitted' })) }} className="px-6 py-2.5 rounded-xl text-sm font-medium text-white transition-all" style={{ background: shellSubmitted ? '#22C55E' : 'var(--color-accent)' }}>
                     Submit Shell Script
                   </button>
                 </div>

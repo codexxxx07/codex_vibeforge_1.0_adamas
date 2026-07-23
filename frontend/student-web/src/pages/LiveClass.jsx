@@ -26,6 +26,8 @@ export default function LiveClass() {
   const [camOn, setCamOn] = useState(true)
   const [showChapters, setShowChapters] = useState(false)
   const [currentChapter, setCurrentChapter] = useState(0)
+  const [screenSharing, setScreenSharing] = useState(false)
+  const [handRaised, setHandRaised] = useState(false)
 
   const sendMessage = () => {
     if (!chatMsg.trim()) return
@@ -82,12 +84,12 @@ export default function LiveClass() {
         <div className="glass-card p-3 flex items-center justify-center gap-2 lg:gap-4">
           <ControlBtn icon={micOn ? 'mic' : 'mic-off'} active={micOn} onClick={() => setMicOn(!micOn)} />
           <ControlBtn icon={camOn ? 'camera' : 'camera-off'} active={camOn} onClick={() => setCamOn(!camOn)} />
-          <ControlBtn icon="screen" label="Share" />
+          <ControlBtn icon="screen" label="Share" active={screenSharing} onClick={() => { setScreenSharing(!screenSharing); alert(screenSharing ? 'Screen sharing stopped' : 'Screen sharing started') }} />
           <ControlBtn icon="message-circle" label="Chat" active={chatOpen} onClick={() => setChatOpen(!chatOpen)} />
           <ControlBtn icon="users" label="People" active={participantsOpen} onClick={() => setParticipantsOpen(!participantsOpen)} />
           <ControlBtn icon="book" label="Chapters" active={showChapters} onClick={() => setShowChapters(!showChapters)} />
-          <ControlBtn icon="hand" label="Hand" />
-          <button className="px-4 py-2 rounded-xl text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-all">
+          <ControlBtn icon="hand" label="Hand" active={handRaised} onClick={() => { setHandRaised(!handRaised); alert(handRaised ? 'Hand lowered' : 'Hand raised — instructor will notice') }} />
+          <button onClick={() => { if (confirm('Are you sure you want to leave the live class?')) alert('You have left the live class.') }} className="px-4 py-2 rounded-xl text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-all">
             Leave
           </button>
         </div>

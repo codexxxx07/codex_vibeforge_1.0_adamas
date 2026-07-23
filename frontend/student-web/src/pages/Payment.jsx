@@ -24,6 +24,7 @@ export default function Payment() {
   const [cardForm, setCardForm] = useState({ number: '', expiry: '', cvv: '', name: '' })
   const [emi, setEmi] = useState(0)
   const [upiId, setUpiId] = useState('')
+  const [selectedBank, setSelectedBank] = useState('')
 
   const plan = plans.find(p => p.id === selectedPlan)
   const emiOptions = [3, 6, 9, 12]
@@ -175,9 +176,9 @@ export default function Payment() {
             {paymentMethod === 'netbanking' && (
               <div className="space-y-3">
                 {['SBI', 'HDFC', 'ICICI', 'Axis', 'Kotak'].map(bank => (
-                  <button key={bank}
+                  <button key={bank} onClick={() => setSelectedBank(bank)}
                     className="w-full p-3 rounded-xl text-sm text-left font-medium transition-all border"
-                    style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+                    style={{ borderColor: selectedBank === bank ? 'var(--color-accent)' : 'var(--color-border)', color: 'var(--color-text-primary)', background: selectedBank === bank ? 'var(--color-accent-light)' : 'transparent' }}
                   >{bank} Bank</button>
                 ))}
               </div>
@@ -207,7 +208,12 @@ export default function Payment() {
               </div>
             </div>
           </div>
-          <button className="w-full py-3 rounded-xl text-sm font-bold text-white transition-all" style={{ background: 'var(--color-accent)' }}>
+          <button onClick={() => {
+            if (paymentMethod === 'card' && (!cardForm.number || !cardForm.expiry || !cardForm.cvv || !cardForm.name)) { alert('Please fill in all card details.'); return }
+            if (paymentMethod === 'upi' && !upiId.trim()) { alert('Please enter a UPI ID.'); return }
+            if (paymentMethod === 'netbanking' && !selectedBank) { alert('Please select a bank.'); return }
+            alert(`Processing payment of ₹${Math.round((plan?.price || 0) * 1.18)} via ${paymentMethod === 'card' ? 'Card' : paymentMethod === 'upi' ? 'UPI' : selectedBank + ' NetBanking'}...`);
+          }} className="w-full py-3 rounded-xl text-sm font-bold text-white transition-all" style={{ background: 'var(--color-accent)' }}>
             Pay ₹{Math.round((plan?.price || 0) * 1.18)}
           </button>
           <p className="text-xs text-center mt-3" style={{ color: 'var(--color-text-muted)' }}>

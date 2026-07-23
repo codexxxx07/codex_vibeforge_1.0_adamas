@@ -79,7 +79,7 @@ export default function App() {
 
   return (
     <DashboardLayout page={page} setPage={setPage}>
-      <PageComponent />
+      <PageComponent setPage={setPage} />
     </DashboardLayout>
   )
 }

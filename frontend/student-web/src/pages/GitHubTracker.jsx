@@ -84,7 +84,7 @@ export default function GitHubTracker() {
         <h3 className="font-bold text-lg mb-4" style={{ color: 'var(--color-text-primary)' }}>Repositories</h3>
         <div className="space-y-3">
           {repos.map((repo, i) => (
-            <div key={i} className="flex items-center justify-between p-4 rounded-xl" style={{ background: 'var(--color-accent-light)' }}>
+            <div key={i} onClick={() => alert(`Opening repository: ${repo.name}\nLanguage: ${repo.language}\nStars: ${repo.stars} | Forks: ${repo.forks}\nUpdated: ${repo.updated}`)} className="flex items-center justify-between p-4 rounded-xl cursor-pointer hover:opacity-80 transition-all" style={{ background: 'var(--color-accent-light)' }}>
               <div>
                 <div className="flex items-center gap-2">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-text-muted)' }}><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
@@ -121,7 +121,7 @@ export default function GitHubTracker() {
             { title: 'Add I2C driver implementation', repo: 'embedded-lab', status: 'merged', date: '1 week ago' },
             { title: 'Update documentation for VLSI toolkit', repo: 'vlsi-toolkit', status: 'open', date: '1 week ago' },
           ].map((pr, i) => (
-            <div key={i} className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'var(--color-accent-light)' }}>
+            <div key={i} onClick={() => alert(`PR: ${pr.title}\nRepo: ${pr.repo}\nStatus: ${pr.status}\nOpened: ${pr.date}`)} className="flex items-center justify-between p-3 rounded-xl cursor-pointer hover:opacity-80 transition-all" style={{ background: 'var(--color-accent-light)' }}>
               <div className="flex items-center gap-3">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: pr.status === 'merged' ? '#7C3AED' : '#22C55E' }}><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
                 <div>

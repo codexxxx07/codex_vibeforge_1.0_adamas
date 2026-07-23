@@ -11,7 +11,7 @@ const CREDENTIALS = {
 // ─── Login Modal ─────────────────────────────────────────────────────────────
 function LoginModal({ portalId, portalTitle, portalColor, onClose }) {
   const [email, setEmail]       = useState("");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("");   
   const [error, setError]       = useState("");
 
   function handleLogin(e) {

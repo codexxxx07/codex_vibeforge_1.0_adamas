@@ -26,7 +26,7 @@ const weakTopics = [
   { topic: 'Signal Handling', progress: 20, course: 'System Calls' },
 ]
 
-export default function Progress() {
+export default function Progress({ setPage }) {
   const [selectedCourse, setSelectedCourse] = useState(null)
 
   return (
@@ -106,7 +106,7 @@ export default function Progress() {
                     <span className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>{wt.topic}</span>
                     <span className="text-[10px] px-1.5 py-0.5 rounded font-medium" style={{ background: 'rgba(239,68,68,0.1)', color: '#EF4444' }}>{wt.progress}%</span>
                   </div>
-                  <button className="text-[10px] px-2 py-1 rounded-lg font-medium text-white" style={{ background: 'var(--color-accent)' }}>
+                  <button onClick={(e) => { e.stopPropagation(); if (setPage) setPage('practice-lab'); else alert(`Opening practice for: ${wt.topic}`) }} className="text-[10px] px-2 py-1 rounded-lg font-medium text-white" style={{ background: 'var(--color-accent)' }}>
                     Practice
                   </button>
                 </div>

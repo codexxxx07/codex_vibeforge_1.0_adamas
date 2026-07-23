@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useTheme } from '../../ThemeContext'
 
 const pageTitles = {
@@ -11,6 +12,7 @@ const pageTitles = {
   'progress': 'Progress',
   'assignments': 'Assignments',
   'certificates': 'Certificates',
+  'terminal': 'Terminal',
   'pyq': 'PYQ Engine',
   'scheduler': 'Scheduler',
   'skill-stack': 'Skill Stack',
@@ -23,6 +25,22 @@ const pageTitles = {
 
 export default function Header({ page, collapsed, setCollapsed, setMobileOpen }) {
   const { dark, toggle } = useTheme()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showNotifications, setShowNotifications] = useState(false)
+
+  const notifications = [
+    { id: 1, text: 'Assignment due tomorrow: Linked List Implementation', time: '1h ago', read: false },
+    { id: 2, text: 'New recording uploaded: Linux File System', time: '3h ago', read: false },
+    { id: 3, text: 'Live class starting in 30 minutes', time: '5h ago', read: false },
+  ]
+
+  const handleSearch = (e) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      alert(`Searching for: "${searchQuery}"`)
+      setSearchQuery('')
+    }
+  }
 
   return (
     <header
@@ -53,15 +71,17 @@ export default function Header({ page, collapsed, setCollapsed, setMobileOpen })
       </div>
 
       <div className="flex items-center gap-2 lg:gap-4">
-        <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl" style={{ background: 'var(--color-accent-light)', border: '1px solid var(--color-border)' }}>
+        <form onSubmit={handleSearch} className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl" style={{ background: 'var(--color-accent-light)', border: '1px solid var(--color-border)' }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-text-muted)' }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input
             type="text"
             placeholder="Search courses, topics..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
             className="bg-transparent text-sm outline-none w-40 lg:w-56"
             style={{ color: 'var(--color-text-primary)' }}
           />
-        </div>
+        </form>
 
         <button
           onClick={toggle}
@@ -75,10 +95,23 @@ export default function Header({ page, collapsed, setCollapsed, setMobileOpen })
           )}
         </button>
 
-        <button className="relative p-2 rounded-lg" style={{ color: 'var(--color-text-muted)' }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center font-bold">3</span>
-        </button>
+        <div className="relative">
+          <button onClick={() => setShowNotifications(!showNotifications)} className="relative p-2 rounded-lg" style={{ color: 'var(--color-text-muted)' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center font-bold">3</span>
+          </button>
+          {showNotifications && (
+            <div className="absolute right-0 top-full mt-2 w-72 glass-card rounded-xl shadow-lg z-50 overflow-hidden">
+              <div className="p-3 border-b font-semibold text-sm" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>Notifications</div>
+              {notifications.map(n => (
+                <div key={n.id} className="p-3 border-b last:border-0 cursor-pointer hover:opacity-80 transition-all" style={{ borderColor: 'var(--color-border)' }}>
+                  <p className="text-xs" style={{ color: 'var(--color-text-primary)' }}>{n.text}</p>
+                  <p className="text-[10px] mt-1" style={{ color: 'var(--color-text-muted)' }}>{n.time}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         <div className="flex items-center gap-2 pl-2 border-l" style={{ borderColor: 'var(--color-border)' }}>
           <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold" style={{ background: 'var(--color-accent)' }}>

@@ -184,7 +184,7 @@ export default function DoubtSolving() {
                 </div>
                 <span className={`ml-auto w-2.5 h-2.5 rounded-full ${m.available ? 'bg-green-500' : 'bg-gray-400'}`} />
               </div>
-              <button disabled={!m.available}
+              <button disabled={!m.available} onClick={() => m.available && alert(`Booking 1:1 session with ${m.name}... You will receive a confirmation shortly!`)}
                 className="w-full py-2 rounded-xl text-xs font-medium text-white transition-all"
                 style={{ background: m.available ? 'var(--color-accent)' : '#6B7280' }}
               >{m.available ? 'Book 1:1 Session' : 'Unavailable'}</button>
