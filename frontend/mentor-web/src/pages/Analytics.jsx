@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTheme } from '../ThemeContext'
+import { useApp } from '../AppContext'
 
 const overviewStats = [
   { label: 'Active Students', value: '847', change: '+12%', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
@@ -18,14 +19,36 @@ const students = [
 
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
 const engagementData = [65, 72, 68, 85, 78, 92]
-const maxEngagement = Math.max(...engagementData)
+
+const coursePerformance = [
+  { name: 'React Fundamentals', progress: 88 },
+  { name: 'JavaScript Advanced', progress: 76 },
+  { name: 'Data Structures', progress: 82 },
+  { name: 'Python Basics', progress: 69 },
+  { name: 'Web Development', progress: 91 },
+]
 
 export default function Analytics() {
   const { dark } = useTheme()
+  const { addToast } = useApp()
   const [selectedStudent, setSelectedStudent] = useState(null)
   const [search, setSearch] = useState('')
 
   const filtered = students.filter(s => s.name.toLowerCase().includes(search.toLowerCase()))
+
+  const exportData = () => {
+    const headers = ['Student', 'Course', 'Progress', 'Last Active', 'Status']
+    const rows = filtered.map(s => [s.name, s.course, `${s.progress}%`, s.lastActive, s.status])
+    const csv = [headers, ...rows].map(r => r.join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'analytics-export.csv'
+    a.click()
+    URL.revokeObjectURL(url)
+    addToast('Analytics data exported successfully!')
+  }
 
   return (
     <div className="space-y-6">
@@ -71,16 +94,16 @@ export default function Analytics() {
         <div className="glass-card p-5">
           <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>Course Performance</h3>
           <div className="space-y-3">
-            {['React Fundamentals', 'JavaScript Advanced', 'Data Structures', 'Python Basics', 'Web Development'].map((course) => (
-              <div key={course} className="flex items-center gap-3">
-                <span className="text-sm w-36 shrink-0 truncate" style={{ color: 'var(--color-text-primary)' }}>{course}</span>
+            {coursePerformance.map((course) => (
+              <div key={course.name} className="flex items-center gap-3">
+                <span className="text-sm w-36 shrink-0 truncate" style={{ color: 'var(--color-text-primary)' }}>{course.name}</span>
                 <div className="flex-1 h-3 rounded-full overflow-hidden" style={{ background: 'var(--color-bg-primary)' }}>
                   <div
                     className="h-full rounded-full transition-all duration-500"
-                    style={{ width: `${Math.floor(Math.random() * 40) + 60}%`, background: 'var(--color-accent)' }}
+                    style={{ width: `${course.progress}%`, background: 'var(--color-accent)' }}
                   />
                 </div>
-                <span className="text-xs w-8 text-right" style={{ color: 'var(--color-text-muted)' }}>{Math.floor(Math.random() * 20) + 80}%</span>
+                <span className="text-xs w-8 text-right" style={{ color: 'var(--color-text-muted)' }}>{course.progress}%</span>
               </div>
             ))}
           </div>
@@ -98,13 +121,13 @@ export default function Analytics() {
                 <h3 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>{selectedStudent.name}</h3>
                 <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{selectedStudent.course} · Last active {selectedStudent.lastActive}</p>
               </div>
-              <span className={`px-2.5 py-1 rounded-lg text-xs font-medium ${selectedStudent.status === 'online' ? '' : ''}`} style={{ background: selectedStudent.status === 'online' ? 'var(--color-accent-light)' : '#64748B20', color: selectedStudent.status === 'online' ? 'var(--color-accent)' : '#64748B' }}>
+              <span className={`px-2.5 py-1 rounded-lg text-xs font-medium`} style={{ background: selectedStudent.status === 'online' ? 'var(--color-accent-light)' : '#64748B20', color: selectedStudent.status === 'online' ? 'var(--color-accent)' : '#64748B' }}>
                 {selectedStudent.status}
               </span>
             </div>
             <button
               onClick={() => setSelectedStudent(null)}
-              className="text-sm px-4 py-2 rounded-xl transition-all duration-200"
+              className="text-sm px-4 py-2 rounded-xl transition-all duration-200 hover:opacity-80"
               style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-muted)' }}
             >
               Back to List
@@ -173,7 +196,11 @@ export default function Analytics() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
-              <button className="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200" style={{ background: 'var(--color-accent)', color: 'white' }}>
+              <button
+                onClick={exportData}
+                className="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:opacity-80"
+                style={{ background: 'var(--color-accent)', color: 'white' }}
+              >
                 Export Data
               </button>
             </div>
@@ -195,7 +222,7 @@ export default function Analytics() {
                   <tr
                     key={s.id}
                     onClick={() => setSelectedStudent(s)}
-                    className="cursor-pointer transition-all duration-150"
+                    className="cursor-pointer transition-all duration-150 hover:opacity-80"
                     style={{ borderBottom: '1px solid var(--color-border)' }}
                   >
                     <td className="p-4">
@@ -218,7 +245,7 @@ export default function Analytics() {
                     <td className="p-4" style={{ color: 'var(--color-text-muted)' }}>{s.lastActive}</td>
                     <td className="p-4">
                       <span className="flex items-center gap-1.5">
-                        <span className={`w-2 h-2 rounded-full ${s.status === 'online' ? '' : ''}`} style={{ background: s.status === 'online' ? '#22C55E' : '#64748B' }} />
+                        <span className={`w-2 h-2 rounded-full`} style={{ background: s.status === 'online' ? '#22C55E' : '#64748B' }} />
                         <span className="text-xs capitalize" style={{ color: 'var(--color-text-muted)' }}>{s.status}</span>
                       </span>
                     </td>

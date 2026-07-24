@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTheme } from '../ThemeContext'
+import { useApp } from '../AppContext'
 
 const sampleMessages = [
   { name: 'Sarah J.', msg: 'Could you explain the closure concept again?', time: '2:14 PM', role: 'student' },
@@ -8,25 +9,13 @@ const sampleMessages = [
   { name: 'Emma W.', msg: 'I have a question about async/await', time: '2:08 PM', role: 'student' },
 ]
 
-const raiseHandQueue = [
+const initialQueue = [
   { name: 'Alex Rivera', question: 'Can you go over the useState hook again?', time: '2:15 PM' },
   { name: 'Lisa Park', question: 'I have a doubt about the useEffect cleanup', time: '2:13 PM' },
 ]
 
-export default function LiveClass() {
-  const { dark } = useTheme()
-  const [isLive, setIsLive] = useState(false)
-  const [chatOpen, setChatOpen] = useState(true)
-  const [topic, setTopic] = useState('Advanced React Hooks')
-  const [duration, setDuration] = useState(60)
-  const [message, setMessage] = useState('')
-  const [messages, setMessages] = useState(sampleMessages)
-  const [queue, setQueue] = useState(raiseHandQueue)
-  const [cameraOn, setCameraOn] = useState(true)
-  const [micOn, setMicOn] = useState(true)
-  const [screenShareOn, setScreenShareOn] = useState(false)
-
-  const ControlBtn = ({ active, onClick, label, icon }) => (
+function ControlBtn({ active, onClick, label, icon }) {
+  return (
     <button
       onClick={onClick}
       className={`p-3 rounded-xl transition-all duration-200 ${active ? 'shadow-lg' : 'opacity-60'}`}
@@ -42,6 +31,50 @@ export default function LiveClass() {
       </svg>
     </button>
   )
+}
+
+export default function LiveClass() {
+  const { dark } = useTheme()
+  const { addToast } = useApp()
+  const [isLive, setIsLive] = useState(false)
+  const [topic, setTopic] = useState('Advanced React Hooks')
+  const [duration, setDuration] = useState(60)
+  const [message, setMessage] = useState('')
+  const [messages, setMessages] = useState(sampleMessages)
+  const [queue, setQueue] = useState(initialQueue)
+  const [cameraOn, setCameraOn] = useState(true)
+  const [micOn, setMicOn] = useState(true)
+  const [screenShareOn, setScreenShareOn] = useState(false)
+
+  const handleStartClass = () => {
+    setIsLive(true)
+    addToast('Live class started!')
+  }
+
+  const handleEndClass = () => {
+    setIsLive(false)
+    addToast('Live class ended!')
+  }
+
+  const handleAccept = (index) => {
+    const student = queue[index]
+    setQueue(queue.filter((_, i) => i !== index))
+    setMessages([...messages, { name: 'Dr. James', msg: `${student.name}, you may ask your question now.`, time: 'Now', role: 'mentor' }])
+    addToast(`${student.name} admitted to ask question`)
+  }
+
+  const handleDecline = (index) => {
+    const student = queue[index]
+    setQueue(queue.filter((_, i) => i !== index))
+    addToast(`${student.name}'s request declined`, 'warning')
+  }
+
+  const sendMessage = () => {
+    if (message.trim()) {
+      setMessages([...messages, { name: 'Dr. James', msg: message, time: 'Now', role: 'mentor' }])
+      setMessage('')
+    }
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -71,7 +104,7 @@ export default function LiveClass() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
                 <p className="text-white/70 text-lg">Camera Preview</p>
-                <p className="text-white/50 text-sm">Dr. James — Advanced React Hooks</p>
+                <p className="text-white/50 text-sm">Dr. James — {topic}</p>
               </div>
             </div>
           ) : (
@@ -96,17 +129,17 @@ export default function LiveClass() {
             <ControlBtn active={screenShareOn} onClick={() => setScreenShareOn(!screenShareOn)} label="Screen Share" icon='M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' />
           </div>
 
-          {!isLive && (
+          {!isLive ? (
             <div className="absolute bottom-4 right-4 flex gap-2">
               <button
-                onClick={() => setIsLive(true)}
-                className="px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 shadow-lg"
+                onClick={handleStartClass}
+                className="px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 shadow-lg hover:opacity-90"
                 style={{ background: '#EF4444', color: 'white' }}
               >
                 Start Class
               </button>
             </div>
-          )}
+          ) : null}
         </div>
 
         <div className="glass-card p-4">
@@ -126,7 +159,7 @@ export default function LiveClass() {
               <input
                 type="number"
                 value={duration}
-                onChange={(e) => setDuration(e.target.value)}
+                onChange={(e) => setDuration(Number(e.target.value))}
                 className="w-16 px-2 py-1.5 rounded-lg text-sm outline-none text-center"
                 style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)' }}
               />
@@ -140,8 +173,8 @@ export default function LiveClass() {
             </div>
             {isLive && (
               <button
-                onClick={() => setIsLive(false)}
-                className="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200"
+                onClick={handleEndClass}
+                className="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 hover:opacity-80"
                 style={{ background: '#EF444420', color: '#EF4444' }}
               >
                 End Class
@@ -151,7 +184,7 @@ export default function LiveClass() {
         </div>
 
         <div className="glass-card p-4">
-          <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--color-text-primary)' }}>Raise Hand Queue</h4>
+          <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--color-text-primary)' }}>Raise Hand Queue ({queue.length})</h4>
           {queue.length === 0 ? (
             <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>No students waiting</p>
           ) : (
@@ -168,8 +201,20 @@ export default function LiveClass() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    <button className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200" style={{ background: 'var(--color-accent)', color: 'white' }}>Accept</button>
-                    <button className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200" style={{ background: '#EF444420', color: '#EF4444' }}>Decline</button>
+                    <button
+                      onClick={() => handleAccept(i)}
+                      className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 hover:opacity-80"
+                      style={{ background: 'var(--color-accent)', color: 'white' }}
+                    >
+                      Accept
+                    </button>
+                    <button
+                      onClick={() => handleDecline(i)}
+                      className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 hover:opacity-80"
+                      style={{ background: '#EF444420', color: '#EF4444' }}
+                    >
+                      Decline
+                    </button>
                   </div>
                 </div>
               ))}
@@ -179,7 +224,7 @@ export default function LiveClass() {
       </div>
 
       <div className="lg:col-span-1">
-        <div className={`glass-card flex flex-col h-full min-h-[500px] ${chatOpen ? '' : ''}`}>
+        <div className="glass-card flex flex-col h-full min-h-[500px]">
           <div className="p-4 border-b flex items-center justify-between" style={{ borderColor: 'var(--color-border)' }}>
             <h3 className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>Live Chat</h3>
             <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>{messages.length}</span>
@@ -211,21 +256,11 @@ export default function LiveClass() {
                 placeholder="Type a message..."
                 className="flex-1 px-3 py-2 rounded-xl text-sm outline-none transition-all duration-200"
                 style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)' }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && message.trim()) {
-                    setMessages([...messages, { name: 'Dr. James', msg: message, time: 'Now', role: 'mentor' }])
-                    setMessage('')
-                  }
-                }}
+                onKeyDown={(e) => { if (e.key === 'Enter') sendMessage() }}
               />
               <button
-                onClick={() => {
-                  if (message.trim()) {
-                    setMessages([...messages, { name: 'Dr. James', msg: message, time: 'Now', role: 'mentor' }])
-                    setMessage('')
-                  }
-                }}
-                className="p-2 rounded-xl transition-all duration-200"
+                onClick={sendMessage}
+                className="p-2 rounded-xl transition-all duration-200 hover:opacity-80"
                 style={{ background: 'var(--color-accent)', color: 'white' }}
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

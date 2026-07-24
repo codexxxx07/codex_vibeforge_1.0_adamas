@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useTheme } from '../ThemeContext'
+import { useApp } from '../AppContext'
 
 const allStudents = [
   { id: 1, name: 'Sarah Johnson', email: 'sarah.j@example.com', courses: ['React Fundamentals', 'Web Development'], progress: 85, lastActive: '2 hours ago', avatar: 'SJ', status: 'online', enrolled: 'Mar 2026', performance: 'Excellent' },
@@ -15,11 +15,13 @@ const allStudents = [
 const ITEMS_PER_PAGE = 6
 
 export default function Students() {
-  const { dark } = useTheme()
+  const { addToast } = useApp()
   const [search, setSearch] = useState('')
   const [selectedStudent, setSelectedStudent] = useState(null)
   const [page, setPage] = useState(1)
   const [filterCourse, setFilterCourse] = useState('All')
+  const [showMessageModal, setShowMessageModal] = useState(false)
+  const [messageText, setMessageText] = useState('')
 
   const courses = ['All', ...new Set(allStudents.flatMap(s => s.courses))]
 
@@ -31,6 +33,30 @@ export default function Students() {
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE)
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE)
+
+  const handleExport = () => {
+    const headers = ['Name', 'Email', 'Courses', 'Progress', 'Last Active', 'Status', 'Enrolled', 'Performance']
+    const rows = filtered.map(s => [s.name, s.email, s.courses.join('; '), `${s.progress}%`, s.lastActive, s.status, s.enrolled, s.performance])
+    const csv = [headers, ...rows].map(r => r.join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'students-export.csv'
+    a.click()
+    URL.revokeObjectURL(url)
+    addToast('Student data exported successfully!')
+  }
+
+  const handleSendMessage = () => {
+    if (!messageText.trim()) {
+      addToast('Please enter a message', 'error')
+      return
+    }
+    addToast(`Message sent to ${allStudents.length} students!`)
+    setMessageText('')
+    setShowMessageModal(false)
+  }
 
   if (selectedStudent) {
     return (
@@ -44,13 +70,13 @@ export default function Students() {
               <h3 className="text-xl font-semibold" style={{ color: 'var(--color-text-primary)' }}>{selectedStudent.name}</h3>
               <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{selectedStudent.email}</p>
             </div>
-            <span className={`px-2.5 py-1 rounded-lg text-xs font-medium`} style={{ background: selectedStudent.status === 'online' ? 'var(--color-accent-light)' : '#64748B20', color: selectedStudent.status === 'online' ? 'var(--color-accent)' : '#64748B' }}>
+            <span className="px-2.5 py-1 rounded-lg text-xs font-medium" style={{ background: selectedStudent.status === 'online' ? 'var(--color-accent-light)' : '#64748B20', color: selectedStudent.status === 'online' ? 'var(--color-accent)' : '#64748B' }}>
               {selectedStudent.status}
             </span>
           </div>
           <button
             onClick={() => setSelectedStudent(null)}
-            className="px-4 py-2 rounded-xl text-sm transition-all duration-200"
+            className="px-4 py-2 rounded-xl text-sm transition-all duration-200 hover:opacity-80"
             style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-muted)' }}
           >
             Back
@@ -74,12 +100,27 @@ export default function Students() {
           </div>
         </div>
 
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>Course Progress</h4>
+          </div>
+          <div className="h-3 rounded-full overflow-hidden" style={{ background: 'var(--color-bg-primary)' }}>
+            <div
+              className="h-full rounded-full transition-all duration-500"
+              style={{
+                width: `${selectedStudent.progress}%`,
+                background: selectedStudent.progress >= 70 ? 'var(--color-accent)' : selectedStudent.progress >= 40 ? '#F4D35E' : '#EF4444',
+              }}
+            />
+          </div>
+        </div>
+
         <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--color-text-primary)' }}>Enrolled Courses</h4>
         <div className="space-y-2">
           {selectedStudent.courses.map((course, i) => (
             <div key={i} className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'var(--color-bg-primary)' }}>
               <span style={{ color: 'var(--color-text-primary)' }}>{course}</span>
-              <span className="text-xs" style={{ color: 'var(--color-accent)' }}>Active</span>
+              <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>Active</span>
             </div>
           ))}
         </div>
@@ -116,10 +157,18 @@ export default function Students() {
           </select>
         </div>
         <div className="flex items-center gap-2">
-          <button className="px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200" style={{ background: 'var(--color-accent)', color: 'white' }}>
+          <button
+            onClick={() => setShowMessageModal(true)}
+            className="px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:opacity-90"
+            style={{ background: 'var(--color-accent)', color: 'white' }}
+          >
             Message All
           </button>
-          <button className="px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200" style={{ background: 'var(--color-bg-card)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)' }}>
+          <button
+            onClick={handleExport}
+            className="px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:opacity-80"
+            style={{ background: 'var(--color-bg-card)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)' }}
+          >
             Export
           </button>
         </div>
@@ -130,14 +179,14 @@ export default function Students() {
           <div
             key={student.id}
             onClick={() => setSelectedStudent(student)}
-            className="glass-card p-5 cursor-pointer transition-all duration-200"
+            className="glass-card p-5 cursor-pointer transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
           >
             <div className="flex items-start gap-3 mb-3">
               <div className="relative shrink-0">
                 <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>
                   {student.avatar}
                 </div>
-                <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2`} style={{ background: student.status === 'online' ? '#22C55E' : '#64748B', borderColor: 'var(--color-bg-card)' }} />
+                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2" style={{ background: student.status === 'online' ? '#22C55E' : '#64748B', borderColor: 'var(--color-bg-card)' }} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>{student.name}</p>
@@ -184,7 +233,7 @@ export default function Students() {
             <button
               key={i}
               onClick={() => setPage(i + 1)}
-              className={`w-9 h-9 rounded-xl text-sm font-medium transition-all duration-200`}
+              className="w-9 h-9 rounded-xl text-sm font-medium transition-all duration-200"
               style={{
                 background: page === i + 1 ? 'var(--color-accent)' : 'var(--color-bg-card)',
                 color: page === i + 1 ? 'white' : 'var(--color-text-muted)',
@@ -203,6 +252,47 @@ export default function Students() {
             Next
           </button>
         </div>
+      )}
+
+      {showMessageModal && (
+        <>
+          <div className="fixed inset-0 bg-black/40 z-50" onClick={() => setShowMessageModal(false)} />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div
+              className="w-full max-w-md rounded-2xl p-6 shadow-2xl animate-fade-in"
+              style={{ background: 'var(--color-bg-card)' }}
+            >
+              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>Message All Students</h3>
+              <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>This will send a message to all {allStudents.length} students.</p>
+              <textarea
+                value={messageText}
+                onChange={(e) => setMessageText(e.target.value)}
+                rows={4}
+                className="w-full px-3 py-2 rounded-xl text-sm outline-none transition-all duration-200 resize-none"
+                style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)' }}
+                placeholder="Type your message here..."
+                onFocus={(e) => e.target.style.borderColor = 'var(--color-accent)'}
+                onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
+              />
+              <div className="flex items-center gap-3 mt-4">
+                <button
+                  onClick={handleSendMessage}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:opacity-90"
+                  style={{ background: 'var(--color-accent)', color: 'white' }}
+                >
+                  Send Message
+                </button>
+                <button
+                  onClick={() => setShowMessageModal(false)}
+                  className="px-6 py-2.5 rounded-xl text-sm transition-all duration-200 hover:opacity-80"
+                  style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-muted)' }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   )

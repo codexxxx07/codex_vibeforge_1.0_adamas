@@ -1,8 +1,8 @@
-import { useState } from 'react'
-import { useTheme } from '../ThemeContext'
+import { useState, useRef } from 'react'
+import { useApp } from '../AppContext'
 
 export default function Settings() {
-  const { dark, toggle } = useTheme()
+  const { addToast } = useApp()
 
   const [profile, setProfile] = useState({
     name: 'Dr. James Wilson',
@@ -27,7 +27,7 @@ export default function Settings() {
     days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
   })
 
-  const [payment, setPayment] = useState({
+  const [payment] = useState({
     bankName: 'First National Bank',
     accountNumber: '****1234',
     ifscCode: 'FNBL0001234',
@@ -35,6 +35,10 @@ export default function Settings() {
   })
 
   const [newExpertise, setNewExpertise] = useState('')
+  const [profileSaved, setProfileSaved] = useState(false)
+  const [availSaved, setAvailSaved] = useState(false)
+  const [showDangerModal, setShowDangerModal] = useState(null)
+  const photoInputRef = useRef(null)
 
   const addExpertise = () => {
     if (newExpertise && !profile.expertise.includes(newExpertise)) {
@@ -56,6 +60,60 @@ export default function Settings() {
     })
   }
 
+  const handleSaveProfile = () => {
+    if (!profile.name.trim()) {
+      addToast('Name is required', 'error')
+      return
+    }
+    if (!profile.email.trim() || !profile.email.includes('@')) {
+      addToast('Please enter a valid email', 'error')
+      return
+    }
+    setProfileSaved(true)
+    addToast('Profile saved successfully!')
+    setTimeout(() => setProfileSaved(false), 2000)
+  }
+
+  const handleSaveAvailability = () => {
+    if (availability.days.length === 0) {
+      addToast('Select at least one working day', 'error')
+      return
+    }
+    if (availability.workHoursStart >= availability.workHoursEnd) {
+      addToast('End time must be after start time', 'error')
+      return
+    }
+    setAvailSaved(true)
+    addToast('Availability saved successfully!')
+    setTimeout(() => setAvailSaved(false), 2000)
+  }
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      addToast(`Profile photo updated to "${file.name}"`)
+    }
+  }
+
+  const handleDangerAction = (action) => {
+    if (action === 'delete') {
+      addToast('Account deletion request submitted', 'warning')
+    } else if (action === 'archive') {
+      addToast('All courses archived', 'warning')
+    } else if (action === 'export') {
+      const data = JSON.stringify({ profile, notifications, availability }, null, 2)
+      const blob = new Blob([data], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'shipwise-data-export.json'
+      a.click()
+      URL.revokeObjectURL(url)
+      addToast('All data exported successfully!')
+    }
+    setShowDangerModal(null)
+  }
+
   const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
   return (
@@ -64,22 +122,30 @@ export default function Settings() {
         <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>Profile</h2>
         <div className="flex items-center gap-4 mb-6">
           <div
-            className="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white"
+            className="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white cursor-pointer hover:opacity-90 transition-opacity"
             style={{ background: 'linear-gradient(135deg, #1D7874, #EE964B)' }}
+            onClick={() => photoInputRef.current?.click()}
           >
-            JW
+            {profile.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
           </div>
+          <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
           <div>
             <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{profile.name}</p>
             <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{profile.email}</p>
-            <button className="text-xs font-medium mt-1" style={{ color: 'var(--color-accent)' }}>Change photo</button>
+            <button
+              onClick={() => photoInputRef.current?.click()}
+              className="text-xs font-medium mt-1 hover:opacity-80"
+              style={{ color: 'var(--color-accent)' }}
+            >
+              Change photo
+            </button>
           </div>
         </div>
 
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Full Name</label>
+              <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Full Name *</label>
               <input
                 type="text"
                 value={profile.name}
@@ -91,7 +157,7 @@ export default function Settings() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Email</label>
+              <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Email *</label>
               <input
                 type="email"
                 value={profile.email}
@@ -147,7 +213,7 @@ export default function Settings() {
               />
               <button
                 onClick={addExpertise}
-                className="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200"
+                className="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:opacity-90"
                 style={{ background: 'var(--color-accent)', color: 'white' }}
               >
                 Add
@@ -175,8 +241,12 @@ export default function Settings() {
         </div>
 
         <div className="mt-6 flex justify-end">
-          <button className="px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200" style={{ background: 'var(--color-accent)', color: 'white' }}>
-            Save Profile
+          <button
+            onClick={handleSaveProfile}
+            className="px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:opacity-90"
+            style={{ background: profileSaved ? '#22C55E' : 'var(--color-accent)', color: 'white' }}
+          >
+            {profileSaved ? 'Saved!' : 'Save Profile'}
           </button>
         </div>
       </div>
@@ -194,7 +264,10 @@ export default function Settings() {
             <div key={item.key} className="flex items-center justify-between py-2">
               <span className="text-sm" style={{ color: 'var(--color-text-primary)' }}>{item.label}</span>
               <button
-                onClick={() => setNotifications({ ...notifications, [item.key]: !notifications[item.key] })}
+                onClick={() => {
+                  setNotifications({ ...notifications, [item.key]: !notifications[item.key] })
+                  addToast(`${item.label} ${notifications[item.key] ? 'disabled' : 'enabled'}`)
+                }}
                 className={`relative w-11 h-6 rounded-full transition-all duration-300 ${notifications[item.key] ? '' : 'opacity-40'}`}
                 style={{
                   background: notifications[item.key] ? 'var(--color-accent)' : 'var(--color-border)',
@@ -219,7 +292,7 @@ export default function Settings() {
                 <button
                   key={day}
                   onClick={() => toggleDay(day)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200`}
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200"
                   style={{
                     background: availability.days.includes(day) ? 'var(--color-accent-light)' : 'var(--color-bg-primary)',
                     color: availability.days.includes(day) ? 'var(--color-accent)' : 'var(--color-text-muted)',
@@ -267,8 +340,12 @@ export default function Settings() {
         </div>
 
         <div className="mt-6 flex justify-end">
-          <button className="px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200" style={{ background: 'var(--color-accent)', color: 'white' }}>
-            Save Availability
+          <button
+            onClick={handleSaveAvailability}
+            className="px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:opacity-90"
+            style={{ background: availSaved ? '#22C55E' : 'var(--color-accent)', color: 'white' }}
+          >
+            {availSaved ? 'Saved!' : 'Save Availability'}
           </button>
         </div>
       </div>
@@ -320,27 +397,89 @@ export default function Settings() {
               />
             </div>
           </div>
-          <button className="px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-200" style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>
+          <button
+            onClick={() => addToast('Payment info update requested. Please contact support.')}
+            className="px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:opacity-80"
+            style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}
+          >
             Update Payment Info
           </button>
         </div>
       </div>
 
-      <div className="glass-card p-6 border-red-500/20" style={{ borderColor: dark ? 'rgba(239,68,68,0.2)' : 'rgba(239,68,68,0.2)' }}>
+      <div className="glass-card p-6" style={{ borderColor: 'rgba(239,68,68,0.2)' }}>
         <h2 className="text-lg font-semibold mb-2" style={{ color: '#EF4444' }}>Danger Zone</h2>
         <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>Irreversible actions that affect your account and courses.</p>
         <div className="flex flex-wrap gap-3">
-          <button className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200" style={{ background: '#EF444415', color: '#EF4444', border: '1px solid #EF444430' }}>
+          <button
+            onClick={() => setShowDangerModal('delete')}
+            className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:opacity-80"
+            style={{ background: '#EF444415', color: '#EF4444', border: '1px solid #EF444430' }}
+          >
             Delete Account
           </button>
-          <button className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200" style={{ background: '#EF444415', color: '#EF4444', border: '1px solid #EF444430' }}>
+          <button
+            onClick={() => setShowDangerModal('archive')}
+            className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:opacity-80"
+            style={{ background: '#EF444415', color: '#EF4444', border: '1px solid #EF444430' }}
+          >
             Archive All Courses
           </button>
-          <button className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200" style={{ background: '#EF444415', color: '#EF4444', border: '1px solid #EF444430' }}>
+          <button
+            onClick={() => handleDangerAction('export')}
+            className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:opacity-80"
+            style={{ background: '#EF444415', color: '#EF4444', border: '1px solid #EF444430' }}
+          >
             Export All Data
           </button>
         </div>
       </div>
+
+      {showDangerModal && (
+        <>
+          <div className="fixed inset-0 bg-black/40 z-50" onClick={() => setShowDangerModal(null)} />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div
+              className="w-full max-w-md rounded-2xl p-6 shadow-2xl animate-fade-in"
+              style={{ background: 'var(--color-bg-card)' }}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: '#EF444420' }}>
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#EF4444" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                    {showDangerModal === 'delete' ? 'Delete Account' : 'Archive All Courses'}
+                  </h3>
+                </div>
+              </div>
+              <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
+                {showDangerModal === 'delete'
+                  ? 'This will permanently delete your account and all associated data. This action cannot be undone.'
+                  : 'This will archive all your courses. Students will no longer be able to access them. This action can be undone by contacting support.'}
+              </p>
+              <div className="flex items-center gap-3 justify-end">
+                <button
+                  onClick={() => setShowDangerModal(null)}
+                  className="px-4 py-2 rounded-xl text-sm transition-all duration-200 hover:opacity-80"
+                  style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-muted)' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDangerAction(showDangerModal)}
+                  className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 hover:opacity-90"
+                  style={{ background: '#EF4444', color: 'white' }}
+                >
+                  Confirm {showDangerModal === 'delete' ? 'Delete' : 'Archive'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }

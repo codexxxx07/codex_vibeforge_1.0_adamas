@@ -1,16 +1,5 @@
 import { useState } from 'react'
-import { useTheme } from '../ThemeContext'
-
-const submissions = [
-  { id: 1, student: 'Sarah Johnson', course: 'React Fundamentals', assignment: 'React Hooks – useRef', date: '2026-06-17', status: 'pending', score: null },
-  { id: 2, student: 'Mike Chen', course: 'JavaScript Advanced', assignment: 'Closures & Scope', date: '2026-06-17', status: 'pending', score: null },
-  { id: 3, student: 'Emma Wilson', course: 'Data Structures', assignment: 'Binary Trees', date: '2026-06-16', status: 'graded', score: 92 },
-  { id: 4, student: 'Alex Rivera', course: 'Python Basics', assignment: 'Functions & Modules', date: '2026-06-16', status: 'pending', score: null },
-  { id: 5, student: 'Lisa Park', course: 'Web Development', assignment: 'CSS Grid Layout', date: '2026-06-15', status: 'graded', score: 88 },
-  { id: 6, student: 'James Bond', course: 'React Fundamentals', assignment: 'State Management', date: '2026-06-15', status: 'pending', score: null },
-  { id: 7, student: 'Olivia Brown', course: 'Machine Learning', assignment: 'Linear Regression', date: '2026-06-14', status: 'graded', score: 95 },
-  { id: 8, student: 'Noah Garcia', course: 'Data Structures', assignment: 'Hash Tables', date: '2026-06-14', status: 'pending', score: null },
-]
+import { useApp } from '../AppContext'
 
 const gradeDistribution = [
   { range: '90-100', count: 12, color: '#1D7874' },
@@ -26,13 +15,14 @@ const courses = ['All Courses', 'React Fundamentals', 'JavaScript Advanced', 'Da
 const statuses = ['All Status', 'Pending', 'Graded']
 
 export default function Grading() {
-  const { dark } = useTheme()
+  const { submissions, submitGrade, quickGrade } = useApp()
   const [selectedCourse, setSelectedCourse] = useState('All Courses')
   const [selectedStatus, setSelectedStatus] = useState('All Status')
   const [selectedSub, setSelectedSub] = useState(null)
   const [gradeInput, setGradeInput] = useState('')
   const [feedback, setFeedback] = useState('')
   const [quickMode, setQuickMode] = useState(false)
+  const [quickGrades, setQuickGrades] = useState({})
 
   const filtered = submissions.filter(s => {
     if (selectedCourse !== 'All Courses' && s.course !== selectedCourse) return false
@@ -41,7 +31,31 @@ export default function Grading() {
     return true
   })
 
-  const avgScore = Math.round(submissions.filter(s => s.score).reduce((a, s) => a + s.score, 0) / submissions.filter(s => s.score).length)
+  const gradedSubs = submissions.filter(s => s.score)
+  const avgScore = gradedSubs.length > 0
+    ? Math.round(gradedSubs.reduce((a, s) => a + s.score, 0) / gradedSubs.length)
+    : 0
+
+  const handleSubmitGrade = () => {
+    if (!selectedSub) return
+    const success = submitGrade(selectedSub.id, gradeInput, feedback)
+    if (success) {
+      setSelectedSub({ ...selectedSub, status: 'graded', score: parseInt(gradeInput, 10) })
+      setGradeInput('')
+      setFeedback('')
+    }
+  }
+
+  const handleQuickGrade = (subId, value) => {
+    setQuickGrades(prev => ({ ...prev, [subId]: value }))
+  }
+
+  const submitQuickGrade = (subId) => {
+    const val = quickGrades[subId]
+    if (val !== undefined && val !== '') {
+      quickGrade(subId, val)
+    }
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -125,7 +139,7 @@ export default function Grading() {
                 {filtered.map((s) => (
                   <tr
                     key={s.id}
-                    onClick={() => { setSelectedSub(s); setGradeInput(s.score?.toString() || ''); setFeedback('') }}
+                    onClick={() => { if (!quickMode) { setSelectedSub(s); setGradeInput(s.score?.toString() || ''); setFeedback('') } }}
                     className="cursor-pointer transition-all duration-150"
                     style={{
                       borderBottom: '1px solid var(--color-border)',
@@ -138,7 +152,7 @@ export default function Grading() {
                     <td className="p-4" style={{ color: 'var(--color-text-muted)' }}>{s.date}</td>
                     <td className="p-4">
                       <span
-                        className={`px-2.5 py-1 rounded-lg text-xs font-medium ${s.status === 'graded' ? '' : ''}`}
+                        className="px-2.5 py-1 rounded-lg text-xs font-medium"
                         style={{
                           background: s.status === 'graded' ? 'var(--color-accent-light)' : '#F4D35E20',
                           color: s.status === 'graded' ? 'var(--color-accent)' : '#EE964B',
@@ -148,14 +162,26 @@ export default function Grading() {
                       </span>
                     </td>
                     {quickMode && (
-                      <td className="p-4">
-                        <input
-                          type="number"
-                          className="w-16 px-2 py-1 rounded-lg text-sm outline-none text-center"
-                          style={{ background: 'var(--color-bg-card)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)' }}
-                          placeholder="0"
-                          onClick={(e) => e.stopPropagation()}
-                        />
+                      <td className="p-4" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center gap-1">
+                          <input
+                            type="number"
+                            value={quickGrades[s.id] || ''}
+                            onChange={(e) => handleQuickGrade(s.id, e.target.value)}
+                            className="w-16 px-2 py-1 rounded-lg text-sm outline-none text-center"
+                            style={{ background: 'var(--color-bg-card)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)' }}
+                            placeholder={s.score || '0'}
+                            min="0"
+                            max="100"
+                          />
+                          <button
+                            onClick={() => submitQuickGrade(s.id)}
+                            className="px-2 py-1 rounded-lg text-xs font-medium transition-all duration-200 hover:opacity-80"
+                            style={{ background: 'var(--color-accent)', color: 'white' }}
+                          >
+                            ✓
+                          </button>
+                        </div>
                       </td>
                     )}
                   </tr>
@@ -186,12 +212,14 @@ export default function Grading() {
                   className="p-3 rounded-xl text-sm min-h-[100px]"
                   style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)' }}
                 >
-                  [Student answer content would appear here. This is a placeholder for the submitted work that needs to be reviewed and graded.]
+                  {selectedSub.status === 'graded'
+                    ? `Previously graded with score: ${selectedSub.score}%`
+                    : 'Student answer content would appear here. This is a placeholder for the submitted work that needs to be reviewed and graded.'}
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Grade (0-100)</label>
+                <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Grade (0-100) *</label>
                 <input
                   type="number"
                   value={gradeInput}
@@ -199,6 +227,7 @@ export default function Grading() {
                   className="w-full px-3 py-2 rounded-xl text-sm outline-none transition-all duration-200"
                   style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)' }}
                   min="0" max="100"
+                  placeholder="Enter grade"
                   onFocus={(e) => e.target.style.borderColor = 'var(--color-accent)'}
                   onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
                 />
@@ -218,7 +247,11 @@ export default function Grading() {
                 />
               </div>
 
-              <button className="w-full py-2.5 rounded-xl text-sm font-semibold transition-all duration-200" style={{ background: 'var(--color-accent)', color: 'white' }}>
+              <button
+                onClick={handleSubmitGrade}
+                className="w-full py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:opacity-90"
+                style={{ background: 'var(--color-accent)', color: 'white' }}
+              >
                 Submit Grade
               </button>
             </div>
