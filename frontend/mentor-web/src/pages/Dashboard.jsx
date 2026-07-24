@@ -53,8 +53,8 @@ export default function Dashboard() {
         <div className="relative z-10">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
-              <h2 className="text-2xl lg:text-3xl font-bold text-white">Welcome back, Dr. James! 👋</h2>
-              <p className="text-white/70 mt-1">Here's what's happening with your courses today.</p>
+              <h2 className="text-2xl lg:text-3xl font-bold dark:text-white text-black">Welcome back, Dr. James! 👋</h2>
+              <p className="dark:text-white/70 text-black/70 mt-1">Here's what's happening with your courses today.</p>
             </div>
             <div className="flex gap-3">
               <button
