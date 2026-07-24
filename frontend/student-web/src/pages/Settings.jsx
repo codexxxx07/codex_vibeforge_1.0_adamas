@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTheme } from '../ThemeContext'
+import Modal from '../components/Modal'
 
 export default function Settings() {
   const { dark: darkMode, toggle: toggleTheme } = useTheme()
@@ -8,6 +9,7 @@ export default function Settings() {
   const [audioOnly, setAudioOnly] = useState(false)
   const [offlineDownload, setOfflineDownload] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'info' })
 
   const settingGroups = [
     {
@@ -45,6 +47,7 @@ export default function Settings() {
   }
 
   return (
+    <>
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -118,21 +121,21 @@ export default function Settings() {
               <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>Profile</p>
               <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>Update your name, email, and photo</p>
             </div>
-            <button onClick={() => alert('Opening profile editor... Update your name, email, and photo.')} className="text-xs font-medium px-3 py-1.5 rounded-lg text-white" style={{ background: 'var(--color-accent)' }}>Edit</button>
+            <button onClick={() => setModal({ open: true, title: 'Profile', message: 'Opening profile editor... Update your name, email, and photo.', type: 'info' })} className="text-xs font-medium px-3 py-1.5 rounded-lg text-white" style={{ background: 'var(--color-accent)' }}>Edit</button>
           </div>
           <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'var(--color-accent-light)' }}>
             <div>
               <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>Password & Security</p>
               <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>Change password, 2FA, session management</p>
             </div>
-            <button onClick={() => alert('Opening password & security settings... Change password, 2FA, session management.')} className="text-xs font-medium px-3 py-1.5 rounded-lg text-white" style={{ background: 'var(--color-accent)' }}>Manage</button>
+            <button onClick={() => setModal({ open: true, title: 'Password & Security', message: 'Opening password & security settings... Change password, 2FA, session management.', type: 'info' })} className="text-xs font-medium px-3 py-1.5 rounded-lg text-white" style={{ background: 'var(--color-accent)' }}>Manage</button>
           </div>
           <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'rgba(239,68,68,0.08)' }}>
             <div>
               <p className="text-sm font-medium" style={{ color: '#EF4444' }}>Delete Account</p>
               <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>Permanently delete your account and all data</p>
             </div>
-            <button onClick={() => { if (confirm('Are you sure you want to permanently delete your account? This action cannot be undone.')) alert('Account deletion request submitted. You will receive a confirmation email.') }} className="text-xs font-medium px-3 py-1.5 rounded-lg text-white" style={{ background: '#EF4444' }}>Delete</button>
+            <button onClick={() => setModal({ open: true, title: 'Delete Account', message: 'Are you sure you want to permanently delete your account? This action cannot be undone.', type: 'warning', showConfirm: true, onConfirm: () => setModal({ open: true, title: 'Account Deleted', message: 'Account deletion request submitted. You will receive a confirmation email.', type: 'success' }) })} className="text-xs font-medium px-3 py-1.5 rounded-lg text-white" style={{ background: '#EF4444' }}>Delete</button>
           </div>
         </div>
       </div>
@@ -148,7 +151,7 @@ export default function Settings() {
                 <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>234 MB — clear to free space</p>
               </div>
             </div>
-            <button onClick={() => { alert('Cached data cleared! Freed 234 MB.'); }} className="text-xs font-medium px-3 py-1.5 rounded-lg" style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>Clear</button>
+            <button onClick={() => { setModal({ open: true, title: 'Cache Cleared', message: 'Cached data cleared! Freed 234 MB.', type: 'success' }); }} className="text-xs font-medium px-3 py-1.5 rounded-lg" style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>Clear</button>
           </div>
           <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'var(--color-accent-light)' }}>
             <div className="flex items-center gap-3">
@@ -158,10 +161,12 @@ export default function Settings() {
                 <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>3 files — 1.2 GB</p>
               </div>
             </div>
-            <button onClick={() => alert('Opening downloads manager... 3 files (1.2 GB). Tap a recording to delete or re-download.')} className="text-xs font-medium px-3 py-1.5 rounded-lg" style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>Manage</button>
+            <button onClick={() => setModal({ open: true, title: 'Downloads', message: 'Opening downloads manager... 3 files (1.2 GB). Tap a recording to delete or re-download.', type: 'info' })} className="text-xs font-medium px-3 py-1.5 rounded-lg" style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>Manage</button>
           </div>
         </div>
       </div>
     </div>
+    <Modal {...modal} onClose={() => setModal(m => ({ ...m, open: false }))} />
+    </>
   )
 }

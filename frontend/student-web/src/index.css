@@ -81,3 +81,13 @@ body {
 .glow-strong {
   box-shadow: 0 0 30px var(--color-glow-strong);
 }
+
+@keyframes modalBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalScaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}

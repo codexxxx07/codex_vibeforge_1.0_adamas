@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Modal from '../components/Modal'
 
 const threads = [
   { id: 1, title: 'Understanding fork() — child process not printing', author: 'Rohit S.', replies: 5, views: 42, tag: 'C', time: '2h ago', solved: true },
@@ -33,6 +34,7 @@ export default function DoubtSolving() {
   const [requestForm, setRequestForm] = useState({ topic: '', desc: '', mentor: '' })
   const [replyText, setReplyText] = useState('')
   const [forumReplies, setForumReplies] = useState(communityMessages)
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'info' })
 
   const filtered = activeTag === 'All' ? threads : threads.filter(t => t.tag === activeTag)
 
@@ -49,6 +51,7 @@ export default function DoubtSolving() {
   }
 
   return (
+    <>
     <div className="max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -184,7 +187,7 @@ export default function DoubtSolving() {
                 </div>
                 <span className={`ml-auto w-2.5 h-2.5 rounded-full ${m.available ? 'bg-green-500' : 'bg-gray-400'}`} />
               </div>
-              <button disabled={!m.available} onClick={() => m.available && alert(`Booking 1:1 session with ${m.name}... You will receive a confirmation shortly!`)}
+              <button disabled={!m.available} onClick={() => m.available && setModal({ open: true, title: 'Session Booked', message: `Booking 1:1 session with ${m.name}... You will receive a confirmation shortly!`, type: 'success' })}
                 className="w-full py-2 rounded-xl text-xs font-medium text-white transition-all"
                 style={{ background: m.available ? 'var(--color-accent)' : '#6B7280' }}
               >{m.available ? 'Book 1:1 Session' : 'Unavailable'}</button>
@@ -223,6 +226,8 @@ export default function DoubtSolving() {
         </div>
       )}
     </div>
+    <Modal {...modal} onClose={() => setModal(m => ({ ...m, open: false }))} />
+    </>
   )
 }
 

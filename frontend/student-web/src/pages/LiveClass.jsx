@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Modal from '../components/Modal'
 
 const participants = [
   { name: 'Dr. Sharma', role: 'Instructor', status: 'active', avatar: 'DS' },
@@ -28,6 +29,7 @@ export default function LiveClass() {
   const [currentChapter, setCurrentChapter] = useState(0)
   const [screenSharing, setScreenSharing] = useState(false)
   const [handRaised, setHandRaised] = useState(false)
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'info' })
 
   const sendMessage = () => {
     if (!chatMsg.trim()) return
@@ -36,6 +38,7 @@ export default function LiveClass() {
   }
 
   return (
+    <>
     <div className="flex flex-col lg:flex-row gap-4 h-[calc(100vh-8rem)]">
       <div className="flex-1 flex flex-col gap-4 min-w-0">
         <div className="relative flex-1 rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #1D7874, #0D4A48)' }}>
@@ -84,12 +87,12 @@ export default function LiveClass() {
         <div className="glass-card p-3 flex items-center justify-center gap-2 lg:gap-4">
           <ControlBtn icon={micOn ? 'mic' : 'mic-off'} active={micOn} onClick={() => setMicOn(!micOn)} />
           <ControlBtn icon={camOn ? 'camera' : 'camera-off'} active={camOn} onClick={() => setCamOn(!camOn)} />
-          <ControlBtn icon="screen" label="Share" active={screenSharing} onClick={() => { setScreenSharing(!screenSharing); alert(screenSharing ? 'Screen sharing stopped' : 'Screen sharing started') }} />
+          <ControlBtn icon="screen" label="Share" active={screenSharing} onClick={() => { setScreenSharing(!screenSharing); setModal({ open: true, title: 'Screen Share', message: screenSharing ? 'Screen sharing stopped' : 'Screen sharing started', type: 'info' }) }} />
           <ControlBtn icon="message-circle" label="Chat" active={chatOpen} onClick={() => setChatOpen(!chatOpen)} />
           <ControlBtn icon="users" label="People" active={participantsOpen} onClick={() => setParticipantsOpen(!participantsOpen)} />
           <ControlBtn icon="book" label="Chapters" active={showChapters} onClick={() => setShowChapters(!showChapters)} />
-          <ControlBtn icon="hand" label="Hand" active={handRaised} onClick={() => { setHandRaised(!handRaised); alert(handRaised ? 'Hand lowered' : 'Hand raised — instructor will notice') }} />
-          <button onClick={() => { if (confirm('Are you sure you want to leave the live class?')) alert('You have left the live class.') }} className="px-4 py-2 rounded-xl text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-all">
+          <ControlBtn icon="hand" label="Hand" active={handRaised} onClick={() => { setHandRaised(!handRaised); setModal({ open: true, title: 'Hand Raise', message: handRaised ? 'Hand lowered' : 'Hand raised — instructor will notice', type: 'info' }) }} />
+          <button onClick={() => setModal({ open: true, title: 'Leave Class', message: 'Are you sure you want to leave the live class?', type: 'warning', showConfirm: true, onConfirm: () => setModal({ open: true, title: 'Left Class', message: 'You have left the live class.', type: 'info' }) })} className="px-4 py-2 rounded-xl text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-all">
             Leave
           </button>
         </div>
@@ -149,6 +152,8 @@ export default function LiveClass() {
         </div>
       )}
     </div>
+    <Modal {...modal} onClose={() => setModal(m => ({ ...m, open: false }))} />
+    </>
   )
 }
 

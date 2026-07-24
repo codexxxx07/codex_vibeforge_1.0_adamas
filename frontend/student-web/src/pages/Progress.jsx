@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Modal from '../components/Modal'
 
 const courses = [
   { name: 'Linux Fundamentals', progress: 78, total: 24, done: 19, color: '#1D7874', weak: 'File Permissions' },
@@ -28,8 +29,10 @@ const weakTopics = [
 
 export default function Progress({ setPage }) {
   const [selectedCourse, setSelectedCourse] = useState(null)
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'info' })
 
   return (
+    <>
     <div className="max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -106,7 +109,7 @@ export default function Progress({ setPage }) {
                     <span className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>{wt.topic}</span>
                     <span className="text-[10px] px-1.5 py-0.5 rounded font-medium" style={{ background: 'rgba(239,68,68,0.1)', color: '#EF4444' }}>{wt.progress}%</span>
                   </div>
-                  <button onClick={(e) => { e.stopPropagation(); if (setPage) setPage('practice-lab'); else alert(`Opening practice for: ${wt.topic}`) }} className="text-[10px] px-2 py-1 rounded-lg font-medium text-white" style={{ background: 'var(--color-accent)' }}>
+                  <button onClick={(e) => { e.stopPropagation(); if (setPage) setPage('practice-lab'); else setModal({ open: true, title: 'Practice', message: `Opening practice for: ${wt.topic}`, type: 'info' }) }} className="text-[10px] px-2 py-1 rounded-lg font-medium text-white" style={{ background: 'var(--color-accent)' }}>
                     Practice
                   </button>
                 </div>
@@ -130,6 +133,8 @@ export default function Progress({ setPage }) {
         </div>
       </div>
     </div>
+    <Modal {...modal} onClose={() => setModal(m => ({ ...m, open: false }))} />
+    </>
   )
 }
 

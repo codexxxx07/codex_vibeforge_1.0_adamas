@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Modal from '../components/Modal'
 
 const plans = [
   {
@@ -25,12 +26,14 @@ export default function Payment() {
   const [emi, setEmi] = useState(0)
   const [upiId, setUpiId] = useState('')
   const [selectedBank, setSelectedBank] = useState('')
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'info' })
 
   const plan = plans.find(p => p.id === selectedPlan)
   const emiOptions = [3, 6, 9, 12]
   const monthlyEmi = plan ? Math.round(plan.price / (emi || 1)) : 0
 
   return (
+    <>
     <div className="max-w-6xl mx-auto">
       <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--color-text-primary)' }}>Choose Your Plan</h2>
 
@@ -209,10 +212,10 @@ export default function Payment() {
             </div>
           </div>
           <button onClick={() => {
-            if (paymentMethod === 'card' && (!cardForm.number || !cardForm.expiry || !cardForm.cvv || !cardForm.name)) { alert('Please fill in all card details.'); return }
-            if (paymentMethod === 'upi' && !upiId.trim()) { alert('Please enter a UPI ID.'); return }
-            if (paymentMethod === 'netbanking' && !selectedBank) { alert('Please select a bank.'); return }
-            alert(`Processing payment of ₹${Math.round((plan?.price || 0) * 1.18)} via ${paymentMethod === 'card' ? 'Card' : paymentMethod === 'upi' ? 'UPI' : selectedBank + ' NetBanking'}...`);
+            if (paymentMethod === 'card' && (!cardForm.number || !cardForm.expiry || !cardForm.cvv || !cardForm.name)) { setModal({ open: true, title: 'Error', message: 'Please fill in all card details.', type: 'error' }); return }
+            if (paymentMethod === 'upi' && !upiId.trim()) { setModal({ open: true, title: 'Error', message: 'Please enter a UPI ID.', type: 'error' }); return }
+            if (paymentMethod === 'netbanking' && !selectedBank) { setModal({ open: true, title: 'Error', message: 'Please select a bank.', type: 'error' }); return }
+            setModal({ open: true, title: 'Processing', message: `Processing payment of ₹${Math.round((plan?.price || 0) * 1.18)} via ${paymentMethod === 'card' ? 'Card' : paymentMethod === 'upi' ? 'UPI' : selectedBank + ' NetBanking'}...`, type: 'info' });
           }} className="w-full py-3 rounded-xl text-sm font-bold text-white transition-all" style={{ background: 'var(--color-accent)' }}>
             Pay ₹{Math.round((plan?.price || 0) * 1.18)}
           </button>
@@ -222,5 +225,7 @@ export default function Payment() {
         </div>
       </div>
     </div>
+    <Modal {...modal} onClose={() => setModal(m => ({ ...m, open: false }))} />
+    </>
   )
 }

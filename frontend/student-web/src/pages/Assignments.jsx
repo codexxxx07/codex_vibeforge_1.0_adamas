@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Modal from '../components/Modal'
 
 const assignments = [
   { id: 1, title: 'Implement a Singly Linked List (C)', due: 'Jun 20, 2026', status: 'pending', type: 'code', points: 100, desc: 'Write a C program to implement a singly linked list with insert, delete, and search operations.', testCases: 5 },
@@ -26,6 +27,7 @@ export default function Assignments() {
   const [fileUpload, setFileUpload] = useState(null)
   const [codeSubmission, setCodeSubmission] = useState('')
   const [shellSubmitted, setShellSubmitted] = useState(false)
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'info' })
 
   const filtered = activeTab === 'all' ? assignments : assignments.filter(a => a.status === activeTab)
 
@@ -47,6 +49,7 @@ export default function Assignments() {
   ]
 
   return (
+    <>
     <div className="max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -171,7 +174,7 @@ export default function Assignments() {
                     className="w-full p-4 font-mono text-sm rounded-xl outline-none resize-none"
                     style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)' }}
                     spellCheck={false} />
-                  <button onClick={() => { if (!codeSubmission.trim()) { alert('Please paste your code before submitting.'); return } alert('Code submitted successfully! Running against test cases...'); setCodeSubmission(''); setSelected(prev => ({ ...prev, status: 'submitted' })) }} className="px-6 py-2.5 rounded-xl text-sm font-medium text-white transition-all" style={{ background: 'var(--color-accent)' }}>
+                  <button onClick={() => { if (!codeSubmission.trim()) { setModal({ open: true, title: 'Error', message: 'Please paste your code before submitting.', type: 'error' }); return } setModal({ open: true, title: 'Submitted', message: 'Code submitted successfully! Running against test cases...', type: 'success' }); setCodeSubmission(''); setSelected(prev => ({ ...prev, status: 'submitted' })) }} className="px-6 py-2.5 rounded-xl text-sm font-medium text-white transition-all" style={{ background: 'var(--color-accent)' }}>
                     Submit Code
                   </button>
                 </div>
@@ -197,7 +200,7 @@ export default function Assignments() {
                       </label>
                     )}
                   </div>
-                  <button onClick={() => { if (!fileUpload) { alert('Please upload a .sh file before submitting.'); return } alert(`Shell script "${fileUpload.name}" submitted successfully! Running against test cases...`); setShellSubmitted(true); setSelected(prev => ({ ...prev, status: 'submitted' })) }} className="px-6 py-2.5 rounded-xl text-sm font-medium text-white transition-all" style={{ background: shellSubmitted ? '#22C55E' : 'var(--color-accent)' }}>
+                  <button onClick={() => { if (!fileUpload) { setModal({ open: true, title: 'Error', message: 'Please upload a .sh file before submitting.', type: 'error' }); return } setModal({ open: true, title: 'Submitted', message: `Shell script "${fileUpload.name}" submitted successfully! Running against test cases...`, type: 'success' }); setShellSubmitted(true); setSelected(prev => ({ ...prev, status: 'submitted' })) }} className="px-6 py-2.5 rounded-xl text-sm font-medium text-white transition-all" style={{ background: shellSubmitted ? '#22C55E' : 'var(--color-accent)' }}>
                     Submit Shell Script
                   </button>
                 </div>
@@ -221,5 +224,7 @@ export default function Assignments() {
         </div>
       </div>
     </div>
+    <Modal {...modal} onClose={() => setModal(m => ({ ...m, open: false }))} />
+    </>
   )
 }

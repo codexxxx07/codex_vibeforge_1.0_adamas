@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTheme } from '../../ThemeContext'
+import Modal from '../Modal'
 
 const pageTitles = {
   'dashboard': 'Dashboard',
@@ -27,6 +28,7 @@ export default function Header({ page, collapsed, setCollapsed, setMobileOpen })
   const { dark, toggle } = useTheme()
   const [searchQuery, setSearchQuery] = useState('')
   const [showNotifications, setShowNotifications] = useState(false)
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'info' })
 
   const notifications = [
     { id: 1, text: 'Assignment due tomorrow: Linked List Implementation', time: '1h ago', read: false },
@@ -37,12 +39,13 @@ export default function Header({ page, collapsed, setCollapsed, setMobileOpen })
   const handleSearch = (e) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      alert(`Searching for: "${searchQuery}"`)
+      setModal({ open: true, title: 'Search', message: `Searching for: "${searchQuery}"`, type: 'info' })
       setSearchQuery('')
     }
   }
 
   return (
+    <>
     <header
       className="sticky top-0 z-30 flex items-center justify-between px-4 lg:px-6 h-16 border-b"
       style={{
@@ -121,5 +124,7 @@ export default function Header({ page, collapsed, setCollapsed, setMobileOpen })
         </div>
       </div>
     </header>
+    <Modal {...modal} onClose={() => setModal(m => ({ ...m, open: false }))} />
+    </>
   )
 }
