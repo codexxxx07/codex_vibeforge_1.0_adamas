@@ -1,5 +1,19 @@
 import { useState } from "react";
+import { Routes, Route, Link } from "react-router-dom";
 import { useTheme } from "./ThemeContext";
+import StudentPortal from "./pages/StudentPortal";
+import MentorPortal from "./pages/MentorPortal";
+import AdminPanel from "./pages/AdminPanel";
+import MobileApp from "./pages/MobileApp";
+import HelpCenter from "./pages/HelpCenter";
+import Documentation from "./pages/Documentation";
+import ApiStatus from "./pages/ApiStatus";
+import Community from "./pages/Community";
+import About from "./pages/About";
+import Careers from "./pages/Careers";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import NotFound from "./pages/NotFound";
 
 // ─── Hardcoded credentials ───────────────────────────────────────────────────
 const CREDENTIALS = {
@@ -173,12 +187,14 @@ const features = [
 ];
 
 export default function App() {
-  const { dark, toggle } = useTheme();
+  const { dark } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [activePortal, setActivePortal] = useState(null); // { id, title, color }
 
   return (
-    <div style={{ backgroundColor: "var(--color-bg-primary)", color: "var(--color-text-primary)", minHeight: "100vh" }}>
+    <Routes>
+      <Route path="/" element={
+        <div style={{ backgroundColor: "var(--color-bg-primary)", color: "var(--color-text-primary)", minHeight: "100vh" }}>
 
       {/* Login Modal */}
       {activePortal && (
@@ -381,15 +397,15 @@ export default function App() {
             </p>
           </div>
           {[
-            { title: "Platform", links: ["Student Portal", "Mentor Portal", "Admin Panel", "Mobile App"] },
-            { title: "Resources", links: ["Help Center", "Documentation", "API Status", "Community"] },
-            { title: "Company", links: ["About Us", "Careers", "Privacy", "Terms"] },
+            { title: "Platform", links: [{ label: "Student Portal", to: "/student-portal" }, { label: "Mentor Portal", to: "/mentor-portal" }, { label: "Admin Panel", to: "/admin-panel" }, { label: "Mobile App", to: "/mobile-app" }] },
+            { title: "Resources", links: [{ label: "Help Center", to: "/help-center" }, { label: "Documentation", to: "/documentation" }, { label: "API Status", to: "/api-status" }, { label: "Community", to: "/community" }] },
+            { title: "Company", links: [{ label: "About Us", to: "/about" }, { label: "Careers", to: "/careers" }, { label: "Privacy", to: "/privacy" }, { label: "Terms", to: "/terms" }] },
           ].map((col) => (
             <div key={col.title}>
               <h4 className="text-sm font-bold mb-4" style={{ color: "var(--color-text-primary)" }}>{col.title}</h4>
               <div className="flex flex-col gap-2.5">
                 {col.links.map((l) => (
-                  <a key={l} href="#" className="text-sm no-underline transition-colors hover:opacity-80" style={{ color: "var(--color-text-muted)" }}>{l}</a>
+                  <Link key={l.to} to={l.to} className="text-sm no-underline transition-colors hover:opacity-80" style={{ color: "var(--color-text-muted)" }}>{l.label}</Link>
                 ))}
               </div>
             </div>
@@ -406,5 +422,20 @@ export default function App() {
         </div>
       </footer>
     </div>
+      } />
+      <Route path="/student-portal" element={<StudentPortal />} />
+      <Route path="/mentor-portal" element={<MentorPortal />} />
+      <Route path="/admin-panel" element={<AdminPanel />} />
+      <Route path="/mobile-app" element={<MobileApp />} />
+      <Route path="/help-center" element={<HelpCenter />} />
+      <Route path="/documentation" element={<Documentation />} />
+      <Route path="/api-status" element={<ApiStatus />} />
+      <Route path="/community" element={<Community />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/careers" element={<Careers />} />
+      <Route path="/privacy" element={<Privacy />} />
+      <Route path="/terms" element={<Terms />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
