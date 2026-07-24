@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { useTheme } from '../ThemeContext'
+import { useApp } from '../AppContext'
 
-function ModuleLesson({ lesson, index, onChange, onRemove }) {
+function ModuleLesson({ lesson, index, onChange, onRemove, onUploadVideo }) {
   return (
     <div className="p-4 rounded-xl ml-6 mt-2" style={{ background: 'var(--color-bg-primary)' }}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -46,18 +46,19 @@ function ModuleLesson({ lesson, index, onChange, onRemove }) {
         />
       </div>
       <div className="mt-3 flex items-center gap-3">
-        <div
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs cursor-pointer transition-all duration-200"
+        <label
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs cursor-pointer transition-all duration-200 hover:opacity-80"
           style={{ border: '1px dashed var(--color-border)', color: 'var(--color-text-muted)' }}
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
           </svg>
-          Upload Video
-        </div>
+          {lesson.videoFile ? lesson.videoFile.name : 'Upload Video'}
+          <input type="file" accept="video/*" className="hidden" onChange={(e) => onUploadVideo(index, e.target.files[0])} />
+        </label>
         <button
           onClick={() => onRemove(index)}
-          className="text-xs px-3 py-1.5 rounded-lg transition-all duration-200"
+          className="text-xs px-3 py-1.5 rounded-lg transition-all duration-200 hover:opacity-70"
           style={{ color: '#EF4444' }}
         >
           Remove
@@ -112,11 +113,16 @@ function ModuleBlock({ module, index, onChange, onRemove, onAddLesson }) {
                 const updated = module.lessons.filter((_, i) => i !== li)
                 onChange('lessons', updated)
               }}
+              onUploadVideo={(li, file) => {
+                const updated = [...module.lessons]
+                updated[li] = { ...updated[li], videoFile: file }
+                onChange('lessons', updated)
+              }}
             />
           ))}
           <button
             onClick={onAddLesson}
-            className="flex items-center gap-2 text-sm font-medium px-3 py-2 rounded-lg transition-all duration-200 ml-6"
+            className="flex items-center gap-2 text-sm font-medium px-3 py-2 rounded-lg transition-all duration-200 ml-6 hover:opacity-80"
             style={{ color: 'var(--color-accent)' }}
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -127,7 +133,7 @@ function ModuleBlock({ module, index, onChange, onRemove, onAddLesson }) {
           {module.lessons.length === 0 && (
             <button
               onClick={() => onRemove()}
-              className="text-xs px-3 py-1.5 rounded-lg ml-6"
+              className="text-xs px-3 py-1.5 rounded-lg ml-6 hover:opacity-70"
               style={{ color: '#EF4444' }}
             >
               Remove Module
@@ -140,12 +146,14 @@ function ModuleBlock({ module, index, onChange, onRemove, onAddLesson }) {
 }
 
 export default function CourseBuilder() {
-  const { dark } = useTheme()
+  const { addToast, publishCourse, addCourse } = useApp()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('')
+  const [level, setLevel] = useState('')
   const [thumbnail, setThumbnail] = useState(null)
   const [modules, setModules] = useState([])
+  const [saving, setSaving] = useState(false)
 
   const addModule = () => {
     setModules([...modules, { title: '', lessons: [] }])
@@ -167,6 +175,34 @@ export default function CourseBuilder() {
     setModules(updated)
   }
 
+  const handlePublish = () => {
+    if (!title.trim()) {
+      addToast('Please enter a course title', 'error')
+      return
+    }
+    if (modules.length === 0) {
+      addToast('Please add at least one module', 'error')
+      return
+    }
+    setSaving(true)
+    setTimeout(() => {
+      publishCourse({ title, description, category, level, thumbnail, modules })
+      setSaving(false)
+    }, 800)
+  }
+
+  const handleSaveDraft = () => {
+    if (!title.trim()) {
+      addToast('Please enter a course title', 'error')
+      return
+    }
+    setSaving(true)
+    setTimeout(() => {
+      addCourse({ title, description, category, level, thumbnail, modules })
+      setSaving(false)
+    }, 600)
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2 space-y-6">
@@ -174,13 +210,13 @@ export default function CourseBuilder() {
           <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>Course Details</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Course Title</label>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Course Title *</label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl text-sm outline-none transition-all duration-200"
-                style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)' }}
+                style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-primary)', border: `1px solid ${!title.trim() ? '#EF444460' : 'var(--color-border)'}` }}
                 placeholder="e.g. Advanced React Development"
                 onFocus={(e) => e.target.style.borderColor = 'var(--color-accent)'}
                 onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
@@ -219,6 +255,8 @@ export default function CourseBuilder() {
               <div>
                 <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Level</label>
                 <select
+                  value={level}
+                  onChange={(e) => setLevel(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-xl text-sm outline-none transition-all duration-200"
                   style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)' }}
                 >
@@ -232,14 +270,26 @@ export default function CourseBuilder() {
             <div>
               <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Thumbnail</label>
               <div
-                className="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200"
-                style={{ borderColor: 'var(--color-border)' }}
+                className="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 hover:border-[var(--color-accent)]"
+                style={{ borderColor: thumbnail ? 'var(--color-accent)' : 'var(--color-border)' }}
                 onClick={() => document.getElementById('thumb-input').click()}
               >
-                <svg className="w-10 h-10 mx-auto mb-2" style={{ color: 'var(--color-text-muted)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Drop an image here or click to browse</p>
+                {thumbnail ? (
+                  <>
+                    <svg className="w-10 h-10 mx-auto mb-2" style={{ color: 'var(--color-accent)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p className="text-sm font-medium" style={{ color: 'var(--color-accent)' }}>{thumbnail.name}</p>
+                    <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>Click to change</p>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-10 h-10 mx-auto mb-2" style={{ color: 'var(--color-text-muted)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Drop an image here or click to browse</p>
+                  </>
+                )}
                 <input id="thumb-input" type="file" accept="image/*" className="hidden" onChange={(e) => setThumbnail(e.target.files[0])} />
               </div>
             </div>
@@ -264,7 +314,7 @@ export default function CourseBuilder() {
             ))}
             <button
               onClick={addModule}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed text-sm font-medium transition-all duration-200"
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed text-sm font-medium transition-all duration-200 hover:opacity-80"
               style={{ borderColor: 'var(--color-border)', color: 'var(--color-accent)' }}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -276,10 +326,20 @@ export default function CourseBuilder() {
         </div>
 
         <div className="flex items-center gap-3">
-          <button className="flex-1 py-3 rounded-xl text-sm font-semibold transition-all duration-200" style={{ background: 'var(--color-accent)', color: 'white' }}>
-            Publish Course
+          <button
+            onClick={handlePublish}
+            disabled={saving}
+            className="flex-1 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:opacity-90 disabled:opacity-50"
+            style={{ background: 'var(--color-accent)', color: 'white' }}
+          >
+            {saving ? 'Publishing...' : 'Publish Course'}
           </button>
-          <button className="px-8 py-3 rounded-xl text-sm font-semibold transition-all duration-200" style={{ background: 'var(--color-bg-card)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)' }}>
+          <button
+            onClick={handleSaveDraft}
+            disabled={saving}
+            className="px-8 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:opacity-80 disabled:opacity-50"
+            style={{ background: 'var(--color-bg-card)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)' }}
+          >
             Save Draft
           </button>
         </div>

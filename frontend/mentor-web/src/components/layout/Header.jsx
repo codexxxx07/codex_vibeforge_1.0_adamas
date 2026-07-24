@@ -1,9 +1,25 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useTheme } from '../../ThemeContext'
+import { useApp } from '../../AppContext'
 
 export default function Header({ title, onMenuClick }) {
   const { dark, toggle } = useTheme()
+  const { notifications, markNotificationRead, markAllNotificationsRead } = useApp()
   const [search, setSearch] = useState('')
+  const [notifOpen, setNotifOpen] = useState(false)
+  const notifRef = useRef(null)
+
+  const unreadCount = notifications.filter(n => !n.read).length
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (notifRef.current && !notifRef.current.contains(e.target)) {
+        setNotifOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
 
   return (
     <header
@@ -64,17 +80,70 @@ export default function Header({ title, onMenuClick }) {
           </svg>
         </button>
 
-        <button className="relative p-2 rounded-xl transition-all duration-200" style={{ color: 'var(--color-text-muted)' }}>
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-          </svg>
-          <span
-            className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center text-white"
-            style={{ background: 'var(--color-accent)' }}
+        <div className="relative" ref={notifRef}>
+          <button
+            onClick={() => setNotifOpen(!notifOpen)}
+            className="relative p-2 rounded-xl transition-all duration-200"
+            style={{ color: 'var(--color-text-muted)' }}
           >
-            3
-          </span>
-        </button>
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+            {unreadCount > 0 && (
+              <span
+                className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center text-white"
+                style={{ background: 'var(--color-accent)' }}
+              >
+                {unreadCount}
+              </span>
+            )}
+          </button>
+
+          {notifOpen && (
+            <div
+              className="absolute right-0 top-full mt-2 w-80 rounded-xl shadow-xl overflow-hidden animate-fade-in"
+              style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}
+            >
+              <div className="flex items-center justify-between p-3 border-b" style={{ borderColor: 'var(--color-border)' }}>
+                <span className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>Notifications</span>
+                {unreadCount > 0 && (
+                  <button
+                    onClick={() => markAllNotificationsRead()}
+                    className="text-xs font-medium"
+                    style={{ color: 'var(--color-accent)' }}
+                  >
+                    Mark all read
+                  </button>
+                )}
+              </div>
+              <div className="max-h-64 overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <p className="p-4 text-sm text-center" style={{ color: 'var(--color-text-muted)' }}>No notifications</p>
+                ) : (
+                  notifications.map(n => (
+                    <div
+                      key={n.id}
+                      onClick={() => markNotificationRead(n.id)}
+                      className="flex items-start gap-3 p-3 cursor-pointer transition-colors hover:opacity-80"
+                      style={{
+                        borderBottom: '1px solid var(--color-border)',
+                        background: n.read ? 'transparent' : 'var(--color-accent-light)',
+                      }}
+                    >
+                      {!n.read && (
+                        <span className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ background: 'var(--color-accent)' }} />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs" style={{ color: 'var(--color-text-primary)' }}>{n.text}</p>
+                        <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{n.time}</p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
 
         <div className="flex items-center gap-2 pl-3 border-l" style={{ borderColor: 'var(--color-border)' }}>
           <div

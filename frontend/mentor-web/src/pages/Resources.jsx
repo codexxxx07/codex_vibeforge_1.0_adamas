@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useTheme } from '../ThemeContext'
+import { useState, useRef } from 'react'
+import { useApp } from '../AppContext'
 
 const folderStructure = [
   {
@@ -49,17 +49,6 @@ const folderStructure = [
       },
     ],
   },
-]
-
-const initialFiles = [
-  { id: 1, name: 'React_Hooks_Guide.pdf', type: 'pdf', size: '2.4 MB', date: '2026-06-15', downloads: 47, shared: true, folder: 'React Fundamentals/Module 2: Hooks/References' },
-  { id: 2, name: 'useRef_Demo.mp4', type: 'video', size: '45 MB', date: '2026-06-14', downloads: 32, shared: true, folder: 'React Fundamentals/Module 2: Hooks' },
-  { id: 3, name: 'Array_Algorithms.docx', type: 'doc', size: '1.1 MB', date: '2026-06-13', downloads: 28, shared: false, folder: 'Data Structures/Module 1: Arrays/Lecture Notes' },
-  { id: 4, name: 'Binary_Tree_Code.zip', type: 'code', size: '3.8 MB', date: '2026-06-12', downloads: 19, shared: true, folder: 'Data Structures/Module 2: Trees/Practice Problems' },
-  { id: 5, name: 'CSS_Grid_Cheatsheet.pdf', type: 'pdf', size: '890 KB', date: '2026-06-11', downloads: 56, shared: true, folder: 'Web Development/Module 1: HTML-CSS/Templates' },
-  { id: 6, name: 'HTML_Template.zip', type: 'code', size: '2.1 MB', date: '2026-06-10', downloads: 41, shared: false, folder: 'Web Development/Module 1: HTML-CSS/Templates' },
-  { id: 7, name: 'State_Mgmt_Slides.pptx', type: 'doc', size: '5.2 MB', date: '2026-06-09', downloads: 23, shared: true, folder: 'React Fundamentals/Module 1: Intro/Slides' },
-  { id: 8, name: 'Intro_Code_Samples.js', type: 'code', size: '156 KB', date: '2026-06-08', downloads: 35, shared: true, folder: 'React Fundamentals/Module 1: Intro/Code Examples' },
 ]
 
 const typeIcons = {
@@ -116,20 +105,37 @@ function FolderNode({ node, depth = 0, activePath, onSelect }) {
 }
 
 export default function Resources() {
-  const { dark } = useTheme()
+  const { resources, addResource, deleteResource, toggleResourceShare, addToast } = useApp()
   const [search, setSearch] = useState('')
   const [selectedFolder, setSelectedFolder] = useState('')
-  const [files, setFiles] = useState(initialFiles)
   const [dragOver, setDragOver] = useState(false)
+  const fileInputRef = useRef(null)
 
-  const filtered = files.filter(f => {
+  const filtered = resources.filter(f => {
     const matchesSearch = f.name.toLowerCase().includes(search.toLowerCase())
     const matchesFolder = !selectedFolder || f.folder.startsWith(selectedFolder.replace(/\//g, '/'))
     return matchesSearch && matchesFolder
   })
 
-  const toggleShare = (id) => {
-    setFiles(files.map(f => f.id === id ? { ...f, shared: !f.shared } : f))
+  const handleFileUpload = (files) => {
+    if (!files || files.length === 0) return
+    Array.from(files).forEach(file => addResource(file))
+  }
+
+  const handleDrop = (e) => {
+    e.preventDefault()
+    setDragOver(false)
+    handleFileUpload(e.dataTransfer.files)
+  }
+
+  const handleDownload = (file) => {
+    addToast(`Downloading "${file.name}"...`)
+  }
+
+  const handleDelete = (id, name) => {
+    if (confirm(`Delete "${name}"? This action cannot be undone.`)) {
+      deleteResource(id)
+    }
   }
 
   return (
@@ -143,7 +149,7 @@ export default function Resources() {
           {selectedFolder && (
             <button
               onClick={() => setSelectedFolder('')}
-              className="mt-3 text-xs px-3 py-1.5 rounded-lg transition-all duration-200"
+              className="mt-3 text-xs px-3 py-1.5 rounded-lg transition-all duration-200 hover:opacity-80"
               style={{ color: 'var(--color-accent)' }}
             >
               Clear filter
@@ -172,22 +178,31 @@ export default function Resources() {
           <label
             className={`px-5 py-2.5 rounded-xl text-sm font-semibold cursor-pointer transition-all duration-200 ${dragOver ? 'shadow-lg' : ''}`}
             style={{
-              background: dragOver ? 'var(--color-accent)' : 'var(--color-accent)',
+              background: 'var(--color-accent)',
               color: 'white',
               opacity: dragOver ? 0.9 : 1,
             }}
             onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
             onDragLeave={() => setDragOver(false)}
-            onDrop={(e) => { e.preventDefault(); setDragOver(false) }}
+            onDrop={handleDrop}
           >
             Upload File
-            <input type="file" className="hidden" />
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden"
+              multiple
+              onChange={(e) => handleFileUpload(e.target.files)}
+            />
           </label>
         </div>
 
         <div
           className={`glass-card overflow-hidden transition-all duration-200 ${dragOver ? 'ring-2' : ''}`}
           style={{ ringColor: dragOver ? 'var(--color-accent)' : 'transparent' }}
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={handleDrop}
         >
           {dragOver && (
             <div className="flex items-center justify-center py-16">
@@ -211,6 +226,7 @@ export default function Resources() {
                     <th className="text-left p-4 font-medium" style={{ color: 'var(--color-text-muted)' }}>Uploaded</th>
                     <th className="text-left p-4 font-medium" style={{ color: 'var(--color-text-muted)' }}>Downloads</th>
                     <th className="text-left p-4 font-medium" style={{ color: 'var(--color-text-muted)' }}>Shared</th>
+                    <th className="text-left p-4 font-medium" style={{ color: 'var(--color-text-muted)' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -234,8 +250,8 @@ export default function Resources() {
                       <td className="p-4" style={{ color: 'var(--color-text-muted)' }}>{f.downloads}</td>
                       <td className="p-4">
                         <button
-                          onClick={() => toggleShare(f.id)}
-                          className={`px-3 py-1 rounded-lg text-xs font-medium transition-all duration-200`}
+                          onClick={() => toggleResourceShare(f.id)}
+                          className="px-3 py-1 rounded-lg text-xs font-medium transition-all duration-200 hover:opacity-80"
                           style={{
                             background: f.shared ? 'var(--color-accent-light)' : '#EF444420',
                             color: f.shared ? 'var(--color-accent)' : '#EF4444',
@@ -244,8 +260,39 @@ export default function Resources() {
                           {f.shared ? 'Shared' : 'Private'}
                         </button>
                       </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => handleDownload(f)}
+                            className="p-1.5 rounded-lg transition-all duration-200 hover:opacity-80"
+                            style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}
+                            title="Download"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleDelete(f.id, f.name)}
+                            className="p-1.5 rounded-lg transition-all duration-200 hover:opacity-80"
+                            style={{ background: '#EF444420', color: '#EF4444' }}
+                            title="Delete"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
+                  {filtered.length === 0 && (
+                    <tr>
+                      <td colSpan={7} className="p-8 text-center">
+                        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>No files found</p>
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

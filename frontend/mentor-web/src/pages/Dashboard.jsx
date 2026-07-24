@@ -1,37 +1,44 @@
-const stats = [
-  { label: 'Total Students', value: '2,847', change: '+12%', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
-  { label: 'Active Courses', value: '14', change: '+3', icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' },
-  { label: 'Pending Gradings', value: '38', change: '+5', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
-  { label: 'Upcoming Classes', value: '6', change: 'Today', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
-]
-
-const quickActions = [
-  { label: 'Start Live Class', icon: 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z' },
-  { label: 'Grade Submissions', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
-  { label: 'View Analytics', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
-  { label: 'Create Course', icon: 'M12 4v16m8-8H4' },
-]
-
-const activities = [
-  { name: 'Sarah Johnson', action: 'submitted assignment', detail: 'React Hooks - Module 3', time: '12 min ago', avatar: 'SJ', online: true },
-  { name: 'Mike Chen', action: 'joined live class', detail: 'Advanced JavaScript', time: '28 min ago', avatar: 'MC', online: true },
-  { name: 'Emma Wilson', action: 'scored 92% on', detail: 'Data Structures Quiz', time: '1 hour ago', avatar: 'EW', online: false },
-  { name: 'Alex Rivera', action: 'posted a question', detail: 'In Graph Theory Discussion', time: '2 hours ago', avatar: 'AR', online: true },
-  { name: 'Lisa Park', action: 'completed', detail: 'Python Basics Course', time: '3 hours ago', avatar: 'LP', online: false },
-]
-
-const schedule = [
-  { time: '09:00 AM', course: 'Advanced Mathematics', students: 24, type: 'Lecture' },
-  { time: '11:00 AM', course: 'Data Structures', students: 18, type: 'Lab' },
-  { time: '02:00 PM', course: 'Web Development', students: 22, type: 'Workshop' },
-  { time: '04:00 PM', course: 'Machine Learning', students: 15, type: 'Mentoring' },
-]
-
-const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-const earnings = [420, 580, 350, 720, 490, 610, 380]
-const maxEarning = Math.max(...earnings)
+import { useApp } from '../AppContext'
 
 export default function Dashboard() {
+  const { navigate, courses, submissions, schedule } = useApp()
+
+  const pendingGradings = submissions.filter(s => s.status === 'pending').length
+  const activeCourses = courses.length
+  const todayClasses = schedule.length
+
+  const stats = [
+    { label: 'Total Students', value: '2,847', change: '+12%', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
+    { label: 'Active Courses', value: String(activeCourses), change: '+3', icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' },
+    { label: 'Pending Gradings', value: String(pendingGradings), change: '+5', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+    { label: 'Upcoming Classes', value: String(todayClasses), change: 'Today', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
+  ]
+
+  const quickActions = [
+    { label: 'Start Live Class', icon: 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z', page: 'live-class' },
+    { label: 'Grade Submissions', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', page: 'grading' },
+    { label: 'View Analytics', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', page: 'analytics' },
+    { label: 'Create Course', icon: 'M12 4v16m8-8H4', page: 'course-builder' },
+  ]
+
+  const activities = [
+    { name: 'Sarah Johnson', action: 'submitted assignment', detail: 'React Hooks - Module 3', time: '12 min ago', avatar: 'SJ', online: true },
+    { name: 'Mike Chen', action: 'joined live class', detail: 'Advanced JavaScript', time: '28 min ago', avatar: 'MC', online: true },
+    { name: 'Emma Wilson', action: 'scored 92% on', detail: 'Data Structures Quiz', time: '1 hour ago', avatar: 'EW', online: false },
+    { name: 'Alex Rivera', action: 'posted a question', detail: 'In Graph Theory Discussion', time: '2 hours ago', avatar: 'AR', online: true },
+    { name: 'Lisa Park', action: 'completed', detail: 'Python Basics Course', time: '3 hours ago', avatar: 'LP', online: false },
+  ]
+
+  const scheduleItems = [
+    { time: '09:00 AM', course: 'Advanced Mathematics', students: 24, type: 'Lecture' },
+    { time: '11:00 AM', course: 'Data Structures', students: 18, type: 'Lab' },
+    { time: '02:00 PM', course: 'Web Development', students: 22, type: 'Workshop' },
+    { time: '04:00 PM', course: 'Machine Learning', students: 15, type: 'Mentoring' },
+  ]
+
+  const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  const earnings = [420, 580, 350, 720, 490, 610, 380]
+  const maxEarning = Math.max(...earnings)
 
   return (
     <div className="space-y-6">
@@ -50,10 +57,18 @@ export default function Dashboard() {
               <p className="text-white/70 mt-1">Here's what's happening with your courses today.</p>
             </div>
             <div className="flex gap-3">
-              <button className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200" style={{ background: 'rgba(255,255,255,0.2)', color: 'white' }}>
+              <button
+                onClick={() => navigate('analytics')}
+                className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:opacity-80"
+                style={{ background: 'rgba(255,255,255,0.2)', color: 'white' }}
+              >
                 View Report
               </button>
-              <button className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200" style={{ background: 'var(--color-accent)', color: 'var(--color-bg-primary)' }}>
+              <button
+                onClick={() => navigate('course-builder')}
+                className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:opacity-80"
+                style={{ background: 'var(--color-accent)', color: 'var(--color-bg-primary)' }}
+              >
                 Quick Start
               </button>
             </div>
@@ -87,7 +102,8 @@ export default function Dashboard() {
         {quickActions.map((action) => (
           <button
             key={action.label}
-            className="glass-card p-5 flex flex-col items-center gap-3 text-center group cursor-pointer"
+            onClick={() => navigate(action.page)}
+            className="glass-card p-5 flex flex-col items-center gap-3 text-center group cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
           >
             <div
               className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 duration-200"
@@ -106,7 +122,13 @@ export default function Dashboard() {
         <div className="glass-card p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>Recent Activity</h3>
-            <button className="text-sm font-medium" style={{ color: 'var(--color-accent)' }}>View All</button>
+            <button
+              onClick={() => navigate('students')}
+              className="text-sm font-medium hover:opacity-80"
+              style={{ color: 'var(--color-accent)' }}
+            >
+              View All
+            </button>
           </div>
           <div className="space-y-4">
             {activities.map((a, i) => (
@@ -134,10 +156,16 @@ export default function Dashboard() {
         <div className="glass-card p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>Today's Schedule</h3>
-            <button className="text-sm font-medium" style={{ color: 'var(--color-accent)' }}>View Calendar</button>
+            <button
+              onClick={() => navigate('schedule')}
+              className="text-sm font-medium hover:opacity-80"
+              style={{ color: 'var(--color-accent)' }}
+            >
+              View Calendar
+            </button>
           </div>
           <div className="space-y-3">
-            {schedule.map((s, i) => (
+            {scheduleItems.map((s, i) => (
               <div key={i} className="flex items-center gap-4 p-3 rounded-xl" style={{ background: 'var(--color-bg-primary)' }}>
                 <div className="text-center min-w-[64px]">
                   <p className="text-xs font-medium" style={{ color: 'var(--color-accent)' }}>{s.time}</p>
