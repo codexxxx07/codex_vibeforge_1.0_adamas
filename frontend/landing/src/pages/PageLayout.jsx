@@ -6,7 +6,8 @@ function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      className="w-9 h-9 rounded-lg flex items-center justify-center border transition-all duration-300 hover:scale-110 hover:rotate-12"
+      type="button"
+      className="theme-toggle w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-300 hover:scale-110 hover:rotate-12"
       style={{
         borderColor: "var(--color-border)",
         color: "var(--color-text-muted)",
@@ -33,34 +34,36 @@ export default function PageLayout({ children }) {
   const { dark } = useTheme();
 
   return (
-    <div style={{ backgroundColor: "var(--color-bg-primary)", color: "var(--color-text-primary)", minHeight: "100vh" }}>
-      <nav
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-8 py-4"
-        style={{
-          background: dark ? "rgba(11,11,24,0.9)" : "rgba(248,250,252,0.9)",
-          backdropFilter: "blur(18px)",
-          borderBottom: "1px solid var(--color-border)",
-        }}
-      >
-        <Link to="/" className="flex items-center gap-2 text-xl font-extrabold tracking-tight no-underline" style={{ color: "var(--color-text-primary)" }}>
-          <span className="text-2xl">🧭</span>
-          Ship<span style={{ color: "var(--color-accent)" }}>wise</span>
-        </Link>
-        <div className="flex items-center gap-4">
-          <Link to="/" className="text-sm font-medium no-underline transition-all duration-300 border-b-2 border-transparent hover:border-[var(--color-accent)] pb-0.5" style={{ color: "var(--color-text-muted)" }}>
-            Home
+    <div className="page-shell" style={{ backgroundColor: "var(--color-bg-primary)", color: "var(--color-text-primary)", minHeight: "100vh" }}>
+      <div className={`floating-nav-shell ${dark ? "" : "px-3 pt-3 sm:px-6"}`}>
+          <nav
+            className={`${dark ? "flex items-center justify-between px-7 sm:px-12 py-4" : "light-nav flex items-center justify-between px-4 sm:px-6 py-3.5"}`}
+          style={{
+            background: "var(--color-nav-bg)",
+            backdropFilter: "blur(var(--blur-nav))",
+            borderBottom: dark ? "1px solid var(--color-border)" : undefined,
+          }}
+        >
+          <Link to="/" className="flex items-center gap-2 text-xl font-extrabold tracking-tight no-underline" style={{ color: "var(--color-text-primary)" }}>
+            <span className="text-2xl">🧭</span>
+            Ship<span style={{ color: "var(--color-accent)" }}>wise</span>
           </Link>
-          <ThemeToggle />
-        </div>
-      </nav>
+          <div className="flex items-center gap-4">
+            <Link to="/" className="nav-link text-sm font-medium no-underline transition-all duration-300 pb-0.5" style={{ color: "var(--color-text-muted)" }}>
+              Home
+            </Link>
+            <ThemeToggle />
+          </div>
+        </nav>
+      </div>
 
-      <main className="pt-24 pb-16 px-4">
-        <div className="max-w-4xl mx-auto">
+      <main className="page-main pt-28 sm:pt-32 pb-16 px-4">
+        <div className="page-content max-w-4xl mx-auto">
           {children}
         </div>
       </main>
 
-      <footer className="px-4 py-12 border-t" style={{ borderColor: "var(--color-border)" }}>
+      <footer className="footer-surface px-4 py-12 border-t" style={{ borderColor: "var(--color-border)" }}>
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-lg font-extrabold">
             <span>🧭</span> Ship<span style={{ color: "var(--color-accent)" }}>wise</span>
