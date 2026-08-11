@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import Modal from '../components/Modal'
 
-const allUsers = [
+const initialUsers = [
   { id: 1, name: 'Rahul Sharma', email: 'rahul.sharma@email.com', role: 'Student', status: 'Active', joined: '18 Jun 2026', avatar: 'RS' },
   { id: 2, name: 'Priya Patel', email: 'priya.p@email.com', role: 'Mentor', status: 'Active', joined: '17 Jun 2026', avatar: 'PP' },
   { id: 3, name: 'Amit Singh', email: 'amit.singh@email.com', role: 'Student', status: 'Active', joined: '17 Jun 2026', avatar: 'AS' },
@@ -24,16 +25,20 @@ const statusColors = {
 }
 
 export default function Users() {
+  const [users, setUsers] = useState(initialUsers)
   const [activeTab, setActiveTab] = useState('All')
   const [search, setSearch] = useState('')
   const [selectedUsers, setSelectedUsers] = useState([])
   const [showAddModal, setShowAddModal] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [form, setForm] = useState({ name: '', email: '', role: 'Student', password: '' })
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'info' })
+  const [editingUser, setEditingUser] = useState(null)
+  const [editForm, setEditForm] = useState({ name: '', email: '', role: '' })
   const perPage = 5
 
-  const filtered = allUsers.filter((u) => {
-    if (activeTab !== 'All' && u.role !== activeTab) return false
+  const filtered = users.filter((u) => {
+    if (activeTab !== 'All' && u.role !== activeTab.slice(0, -1)) return false
     if (search && !u.name.toLowerCase().includes(search.toLowerCase()) && !u.email.toLowerCase().includes(search.toLowerCase())) return false
     return true
   })
@@ -54,12 +59,70 @@ export default function Users() {
   }
 
   const handleAdd = () => {
+    if (!form.name.trim() || !form.email.trim()) {
+      setModal({ open: true, title: 'Validation Error', message: 'Please fill in all required fields (Name and Email).', type: 'warning' })
+      return
+    }
+    const initials = form.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+    const newUser = {
+      id: Math.max(...users.map(u => u.id)) + 1,
+      name: form.name,
+      email: form.email,
+      role: form.role,
+      status: 'Active',
+      joined: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+      avatar: initials,
+    }
+    setUsers([newUser, ...users])
     setShowAddModal(false)
     setForm({ name: '', email: '', role: 'Student', password: '' })
+    setModal({ open: true, title: 'User Added', message: `${form.name} has been successfully added as a ${form.role}.`, type: 'success' })
+  }
+
+  const handleDelete = (user) => {
+    setUsers(users.filter(u => u.id !== user.id))
+    setSelectedUsers(selectedUsers.filter(id => id !== user.id))
+    setModal({ open: true, title: 'User Deleted', message: `${user.name} has been removed from the system.`, type: 'success' })
+  }
+
+  const handleEdit = (user) => {
+    setEditingUser(user)
+    setEditForm({ name: user.name, email: user.email, role: user.role })
+  }
+
+  const handleSaveEdit = () => {
+    setUsers(users.map(u => u.id === editingUser.id ? { ...u, name: editForm.name, email: editForm.email, role: editForm.role, avatar: editForm.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) } : u))
+    setEditingUser(null)
+    setModal({ open: true, title: 'User Updated', message: `${editForm.name}'s profile has been updated successfully.`, type: 'success' })
+  }
+
+  const handleBulkSuspend = () => {
+    setUsers(users.map(u => selectedUsers.includes(u.id) ? { ...u, status: 'Inactive' } : u))
+    const count = selectedUsers.length
+    setSelectedUsers([])
+    setModal({ open: true, title: 'Users Suspended', message: `${count} user(s) have been suspended successfully.`, type: 'warning' })
+  }
+
+  const handleBulkActivate = () => {
+    setUsers(users.map(u => selectedUsers.includes(u.id) ? { ...u, status: 'Active' } : u))
+    const count = selectedUsers.length
+    setSelectedUsers([])
+    setModal({ open: true, title: 'Users Activated', message: `${count} user(s) have been activated successfully.`, type: 'success' })
   }
 
   return (
     <div className="space-y-6">
+      <Modal
+        open={modal.open}
+        onClose={() => setModal({ ...modal, open: false })}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        showConfirm={modal.showConfirm}
+        onConfirm={modal.onConfirm}
+        confirmText={modal.confirmText}
+      />
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h2 className="text-xl lg:text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
           User Management
@@ -114,8 +177,8 @@ export default function Users() {
           {selectedUsers.length > 0 && (
             <div className="flex items-center gap-2 text-sm">
               <span style={{ color: 'var(--color-text-muted)' }}>{selectedUsers.length} selected</span>
-              <button className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ background: '#EF444420', color: '#EF4444' }}>Suspend</button>
-              <button className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ background: '#F59E0B20', color: '#F59E0B' }}>Activate</button>
+              <button onClick={handleBulkSuspend} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ background: '#EF444420', color: '#EF4444' }}>Suspend</button>
+              <button onClick={handleBulkActivate} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ background: '#F59E0B20', color: '#F59E0B' }}>Activate</button>
             </div>
           )}
         </div>
@@ -183,13 +246,29 @@ export default function Users() {
                   <td className="py-3.5 px-4" style={{ color: 'var(--color-text-muted)' }}>{user.joined}</td>
                   <td className="py-3.5 pl-4 pr-4">
                     <div className="flex items-center justify-end gap-2">
-                      <button className="p-1.5 rounded-lg transition-colors" style={{ color: 'var(--color-text-muted)' }}>
+                      <button
+                        onClick={() => handleEdit(user)}
+                        className="p-1.5 rounded-lg transition-colors"
+                        style={{ color: 'var(--color-text-muted)' }}
+                      >
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                       </button>
-                      <button className="p-1.5 rounded-lg transition-colors" style={{ color: '#F59E0B' }}>
+                      <button
+                        onClick={() => {
+                          const newStatus = user.status === 'Active' ? 'Inactive' : 'Active'
+                          setUsers(users.map(u => u.id === user.id ? { ...u, status: newStatus } : u))
+                          setModal({ open: true, title: `User ${newStatus === 'Active' ? 'Activated' : 'Deactivated'}`, message: `${user.name} has been ${newStatus === 'Active' ? 'activated' : 'deactivated'} successfully.`, type: newStatus === 'Active' ? 'success' : 'warning' })
+                        }}
+                        className="p-1.5 rounded-lg transition-colors"
+                        style={{ color: '#F59E0B' }}
+                      >
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
                       </button>
-                      <button className="p-1.5 rounded-lg transition-colors" style={{ color: '#EF4444' }}>
+                      <button
+                        onClick={() => handleDelete(user)}
+                        className="p-1.5 rounded-lg transition-colors"
+                        style={{ color: '#EF4444' }}
+                      >
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                       </button>
                     </div>
@@ -309,6 +388,71 @@ export default function Users() {
                   style={{ background: 'var(--color-accent)' }}
                 >
                   Add User
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {editingUser && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-50" onClick={() => setEditingUser(null)} />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div
+              className="w-full max-w-md rounded-2xl p-6 lg:p-8 shadow-xl"
+              style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}
+            >
+              <h3 className="text-xl font-bold mb-6" style={{ color: 'var(--color-text-primary)' }}>Edit User</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Full Name</label>
+                  <input
+                    type="text"
+                    value={editForm.name}
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-colors focus:border-[var(--color-accent)]"
+                    style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Email</label>
+                  <input
+                    type="email"
+                    value={editForm.email}
+                    onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-colors focus:border-[var(--color-accent)]"
+                    style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Role</label>
+                  <select
+                    value={editForm.role}
+                    onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
+                    style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}
+                  >
+                    <option>Student</option>
+                    <option>Mentor</option>
+                    <option>Admin</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => setEditingUser(null)}
+                  className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                  style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors"
+                  style={{ background: 'var(--color-accent)' }}
+                >
+                  Save Changes
                 </button>
               </div>
             </div>

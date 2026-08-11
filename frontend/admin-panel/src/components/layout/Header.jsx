@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Modal from '../Modal'
 
 const pageTitles = {
   dashboard: 'Dashboard',
@@ -15,13 +16,15 @@ const pageTitles = {
 export default function Header({ page, dark, toggleTheme, setMobileOpen }) {
   const [search, setSearch] = useState('')
   const [showNotifications, setShowNotifications] = useState(false)
-
-  const notifications = [
+  const [notifications, setNotifications] = useState([
     { id: 1, text: 'New user registration: Rahul Sharma', time: '2 min ago', unread: true },
     { id: 2, text: 'Payment of ₹4,999 received from Amit Patel', time: '15 min ago', unread: true },
     { id: 3, text: 'Course "React Mastery" pending approval', time: '1 hour ago', unread: false },
     { id: 4, text: 'Batch B2024-03 completed', time: '3 hours ago', unread: false },
-  ]
+  ])
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'info' })
+
+  const unreadCount = notifications.filter(n => n.unread).length
 
   return (
     <header
@@ -31,6 +34,13 @@ export default function Header({ page, dark, toggleTheme, setMobileOpen }) {
         borderColor: 'var(--color-border)',
       }}
     >
+      <Modal
+        open={modal.open}
+        onClose={() => setModal({ ...modal, open: false })}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+      />
       <div className="flex items-center gap-4">
         <button
           className="lg:hidden p-2 rounded-lg hover:opacity-70"
@@ -76,7 +86,7 @@ export default function Header({ page, dark, toggleTheme, setMobileOpen }) {
             onClick={() => setShowNotifications(!showNotifications)}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full text-[10px] flex items-center justify-center text-white font-bold" style={{ background: '#EF4444' }}>3</span>
+            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full text-[10px] flex items-center justify-center text-white font-bold" style={{ background: '#EF4444' }}>{unreadCount}</span>
           </button>
 
           {showNotifications && (
@@ -91,7 +101,10 @@ export default function Header({ page, dark, toggleTheme, setMobileOpen }) {
               >
                 <div className="px-5 py-4 border-b flex items-center justify-between" style={{ borderColor: 'var(--color-border)' }}>
                   <span className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>Notifications</span>
-                  <button className="text-xs font-medium" style={{ color: 'var(--color-accent)' }}>Mark all read</button>
+                  <button onClick={() => {
+                    setNotifications(notifications.map(n => ({ ...n, unread: false })))
+                    setModal({ open: true, title: 'Notifications Cleared', message: 'All notifications have been marked as read.', type: 'success' })
+                  }} className="text-xs font-medium" style={{ color: 'var(--color-accent)' }}>Mark all read</button>
                 </div>
                 <div className="max-h-72 overflow-y-auto">
                   {notifications.map((n) => (
@@ -101,6 +114,9 @@ export default function Header({ page, dark, toggleTheme, setMobileOpen }) {
                       style={{
                         borderColor: 'var(--color-border)',
                         background: n.unread ? 'var(--color-accent-light)' : 'transparent',
+                      }}
+                      onClick={() => {
+                        setNotifications(notifications.map(item => item.id === n.id ? { ...item, unread: false } : item))
                       }}
                     >
                       <p className="font-medium" style={{ color: 'var(--color-text-primary)' }}>{n.text}</p>

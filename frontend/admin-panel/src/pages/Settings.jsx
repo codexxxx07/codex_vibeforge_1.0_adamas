@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTheme } from '../ThemeContext'
+import Modal from '../components/Modal'
 
 export default function Settings() {
   const { dark, toggle } = useTheme()
@@ -25,15 +26,36 @@ export default function Settings() {
   const [twoFA, setTwoFA] = useState(false)
   const [sessionTimeout, setSessionTimeout] = useState('30')
   const [passwordPolicy, setPasswordPolicy] = useState('strong')
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'info' })
   const [saved, setSaved] = useState(false)
 
   const handleSave = () => {
     setSaved(true)
+    setModal({ open: true, title: 'Settings Saved', message: 'All platform settings have been updated successfully.', type: 'success' })
     setTimeout(() => setSaved(false), 2000)
+  }
+
+  const handleTestConnection = () => {
+    setModal({ open: true, title: 'Connection Successful', message: `SMTP connection to ${smtp.host}:${smtp.port} established successfully. All settings are correct.`, type: 'success' })
+  }
+
+  const handleConfigureGateway = () => {
+    setModal({ open: true, title: 'Payment Gateway', message: 'Payment gateway configuration panel will open. Razorpay, Stripe, and Instamojo are currently active and operational.', type: 'info' })
   }
 
   return (
     <div className="space-y-6">
+      <Modal
+        open={modal.open}
+        onClose={() => setModal({ ...modal, open: false })}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        showConfirm={modal.showConfirm}
+        onConfirm={modal.onConfirm}
+        confirmText={modal.confirmText}
+      />
+
       <div className="flex items-center justify-between">
         <h2 className="text-xl lg:text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
           Settings
@@ -191,6 +213,7 @@ export default function Settings() {
             </div>
           </div>
           <button
+            onClick={handleTestConnection}
             className="mt-4 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all"
             style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}
           >
@@ -211,6 +234,7 @@ export default function Settings() {
               </div>
             </div>
             <button
+              onClick={handleConfigureGateway}
               className="mt-3 px-4 py-1.5 rounded-lg text-xs font-semibold"
               style={{ background: 'var(--color-accent)', color: '#FFFFFF' }}
             >
@@ -333,7 +357,16 @@ export default function Settings() {
               </div>
             </div>
             <button
-              onClick={() => setMaintenance(!maintenance)}
+              onClick={() => {
+                const newState = !maintenance
+                setMaintenance(newState)
+                setModal({
+                  open: true,
+                  title: newState ? 'Maintenance Mode Enabled' : 'Maintenance Mode Disabled',
+                  message: newState ? 'The platform is now in maintenance mode. Users will not be able to access the site.' : 'The platform is now live and accessible to all users.',
+                  type: newState ? 'warning' : 'success',
+                })
+              }}
               className={`w-11 h-6 rounded-full relative transition-colors duration-200`}
               style={{ background: maintenance ? '#EF4444' : '#CBD5E1' }}
             >

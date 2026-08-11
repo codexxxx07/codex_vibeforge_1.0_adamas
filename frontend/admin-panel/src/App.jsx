@@ -51,7 +51,7 @@ function App() {
       setAuthChecked(true)
     } else {
       console.log('[Admin] Auth FAILED, redirecting to landing')
-      window.location.href = 'http://localhost:5173'
+      window.location.href = import.meta.env.VITE_LANDING_URL
     }
   }, [])
 

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Modal from '../components/Modal'
 
 const revenueStats = [
   { label: 'Total Revenue', value: '₹1,28,49,200', change: '+22%', color: '#22C55E' },
@@ -7,7 +8,7 @@ const revenueStats = [
   { label: 'Successful Transactions', value: '14,892', change: '+15%', color: '#1D7874' },
 ]
 
-const transactions = [
+const initialTransactions = [
   { id: 'TXN-001', user: 'Rahul Sharma', amount: '₹4,999', method: 'UPI', status: 'Success', date: '18 Jun 2026' },
   { id: 'TXN-002', user: 'Priya Patel', amount: '₹9,999', method: 'Card', status: 'Success', date: '17 Jun 2026' },
   { id: 'TXN-003', user: 'Amit Singh', amount: '₹2,499', method: 'Net Banking', status: 'Pending', date: '17 Jun 2026' },
@@ -18,7 +19,7 @@ const transactions = [
   { id: 'TXN-008', user: 'Deepika Mehta', amount: '₹22,000', method: 'Card', status: 'Pending', date: '13 Jun 2026' },
 ]
 
-const payouts = [
+const initialPayouts = [
   { mentor: 'Vikram Joshi', amount: '₹45,000', courses: 3, status: 'Pending', due: '25 Jun 2026' },
   { mentor: 'Deepika Mehta', amount: '₹32,000', courses: 2, status: 'Pending', due: '25 Jun 2026' },
   { mentor: 'Priya Patel', amount: '₹28,500', courses: 2, status: 'Paid', due: '10 Jun 2026' },
@@ -35,19 +36,47 @@ const statusColors = {
 }
 
 export default function Payments() {
+  const [payouts, setPayouts] = useState(initialPayouts)
   const [statusFilter, setStatusFilter] = useState('All')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
   const [methodFilter, setMethodFilter] = useState('All')
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'info' })
 
-  const filtered = transactions.filter((t) => {
+  const filtered = initialTransactions.filter((t) => {
     if (statusFilter !== 'All' && t.status !== statusFilter) return false
     if (methodFilter !== 'All' && t.method !== methodFilter) return false
     return true
   })
 
+  const handleProcessAll = () => {
+    const pendingCount = payouts.filter(p => p.status === 'Pending').length
+    if (pendingCount === 0) {
+      setModal({ open: true, title: 'No Pending Payouts', message: 'All mentor payouts have already been processed.', type: 'info' })
+      return
+    }
+    setPayouts(payouts.map(p => p.status === 'Pending' ? { ...p, status: 'Paid' } : p))
+    setModal({ open: true, title: 'Payouts Processed', message: `${pendingCount} pending payout(s) have been processed successfully.`, type: 'success' })
+  }
+
+  const handlePayNow = (mentor) => {
+    setPayouts(payouts.map(p => p.mentor === mentor.mentor ? { ...p, status: 'Paid' } : p))
+    setModal({ open: true, title: 'Payment Sent', message: `Payment of ${mentor.amount} to ${mentor.mentor} has been processed successfully.`, type: 'success' })
+  }
+
   return (
     <div className="space-y-6">
+      <Modal
+        open={modal.open}
+        onClose={() => setModal({ ...modal, open: false })}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        showConfirm={modal.showConfirm}
+        onConfirm={modal.onConfirm}
+        confirmText={modal.confirmText}
+      />
+
       <h2 className="text-xl lg:text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
         Payments Dashboard
       </h2>
@@ -168,6 +197,7 @@ export default function Payments() {
             Mentor Payouts
           </h3>
           <button
+            onClick={handleProcessAll}
             className="px-4 py-2 rounded-xl text-xs font-semibold text-white transition-all"
             style={{ background: 'var(--color-accent)' }}
           >
@@ -204,6 +234,7 @@ export default function Payments() {
                   <td className="py-3.5 text-right">
                     {p.status === 'Pending' ? (
                       <button
+                        onClick={() => handlePayNow(p)}
                         className="px-4 py-1.5 rounded-lg text-xs font-semibold text-white transition-all"
                         style={{ background: 'var(--color-accent)' }}
                       >

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Modal from '../components/Modal'
 
 const reportTypes = [
   {
@@ -63,6 +64,7 @@ const reportTypes = [
 
 export default function Reports() {
   const [expanded, setExpanded] = useState(null)
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'info' })
 
   const toggleExpanded = (id) => setExpanded(expanded === id ? null : id)
 
@@ -82,15 +84,34 @@ export default function Reports() {
 
   return (
     <div className="space-y-6">
+      <Modal
+        open={modal.open}
+        onClose={() => setModal({ ...modal, open: false })}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        showConfirm={modal.showConfirm}
+        onConfirm={modal.onConfirm}
+        confirmText={modal.confirmText}
+      />
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h2 className="text-xl lg:text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
           Reports
         </h2>
         <div className="flex items-center gap-3">
-          <button className="px-5 py-2 rounded-xl text-sm font-semibold transition-all" style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>
+          <button
+            onClick={() => setModal({ open: true, title: 'CSV Downloaded', message: 'All reports have been exported as CSV and downloaded.', type: 'success' })}
+            className="px-5 py-2 rounded-xl text-sm font-semibold transition-all"
+            style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}
+          >
             Download CSV
           </button>
-          <button className="px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all" style={{ background: 'var(--color-accent)' }}>
+          <button
+            onClick={() => setModal({ open: true, title: 'PDF Downloaded', message: 'All reports have been exported as PDF and downloaded.', type: 'success' })}
+            className="px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all"
+            style={{ background: 'var(--color-accent)' }}
+          >
             Download PDF
           </button>
         </div>

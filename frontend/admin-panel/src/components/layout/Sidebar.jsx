@@ -116,7 +116,7 @@ export default function Sidebar({ page, setPage, dark, toggleTheme, mobileOpen, 
             onClick={() => {
               localStorage.removeItem('isAuthenticated')
               localStorage.removeItem('role')
-              window.location.href = 'http://localhost:5173'
+              window.location.href = import.meta.env.VITE_LANDING_URL
             }}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 mt-2"
             style={{ color: '#EF4444' }}

@@ -38,7 +38,7 @@ function checkAuth() {
     if (urlAuth) window.history.replaceState({}, '', window.location.pathname)
     return true
   }
-  window.location.href = 'http://localhost:5173'
+  window.location.href = import.meta.env.VITE_LANDING_URL
   return false
 }
 

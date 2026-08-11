@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Modal from '../components/Modal'
 
 const initialCourses = [
   { id: 1, title: 'Full Stack Web Development', category: 'Web Development', mentor: 'Vikram Joshi', price: '₹4,999', enrollments: 2450, rating: 4.8, status: 'Published', thumbnail: null },
@@ -27,6 +28,9 @@ export default function Courses() {
   const [statusFilter, setStatusFilter] = useState('All')
   const [priceRange, setPriceRange] = useState('All')
   const [selectedCourses, setSelectedCourses] = useState([])
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'info' })
+  const [editingCourse, setEditingCourse] = useState(null)
+  const [editForm, setEditForm] = useState({ title: '', category: '', mentor: '', price: '' })
 
   const filtered = courses.filter((c) => {
     if (categoryFilter !== 'All' && c.category !== categoryFilter) return false
@@ -44,21 +48,57 @@ export default function Courses() {
     setSelectedCourses((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id])
   }
 
-  const handleDelete = (id) => {
-    setCourses(courses.filter((c) => c.id !== id))
-    setSelectedCourses(selectedCourses.filter((s) => s !== id))
+  const handleDelete = (course) => {
+    setCourses(courses.filter((c) => c.id !== course.id))
+    setSelectedCourses(selectedCourses.filter((s) => s !== course.id))
+    setModal({ open: true, title: 'Course Deleted', message: `"${course.title}" has been removed.`, type: 'success' })
   }
 
-  const handleArchive = (id) => {
-    setCourses(courses.map((c) => c.id === id ? { ...c, status: 'Archived' } : c))
+  const handleArchive = (course) => {
+    setCourses(courses.map((c) => c.id === course.id ? { ...c, status: 'Archived' } : c))
+    setModal({ open: true, title: 'Course Archived', message: `"${course.title}" has been archived.`, type: 'info' })
   }
 
-  const handleFeature = (id) => {
-    setCourses(courses.map((c) => c.id === id ? { ...c, featured: !c.featured } : c))
+  const handleFeature = (course) => {
+    setCourses(courses.map((c) => c.id === course.id ? { ...c, featured: !c.featured } : c))
+    setModal({ open: true, title: course.featured ? 'Removed from Featured' : 'Course Featured', message: `"${course.title}" has been ${course.featured ? 'removed from' : 'added to'} featured courses.`, type: 'success' })
+  }
+
+  const handleBulkDelete = () => {
+    const count = selectedCourses.length
+    setCourses(courses.filter(c => !selectedCourses.includes(c.id)))
+    setSelectedCourses([])
+    setModal({ open: true, title: 'Courses Deleted', message: `${count} course(s) have been removed.`, type: 'success' })
+  }
+
+  const handleCreateCourse = () => {
+    setModal({ open: true, title: 'Coming Soon', message: 'Course creation wizard will be available in the next update. Currently showing simulated response.', type: 'info' })
+  }
+
+  const handleEdit = (course) => {
+    setEditingCourse(course)
+    setEditForm({ title: course.title, category: course.category, mentor: course.mentor, price: course.price })
+  }
+
+  const handleSaveEdit = () => {
+    setCourses(courses.map(c => c.id === editingCourse.id ? { ...c, ...editForm } : c))
+    setEditingCourse(null)
+    setModal({ open: true, title: 'Course Updated', message: `"${editForm.title}" has been updated successfully.`, type: 'success' })
   }
 
   return (
     <div className="space-y-6">
+      <Modal
+        open={modal.open}
+        onClose={() => setModal({ ...modal, open: false })}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        showConfirm={modal.showConfirm}
+        onConfirm={modal.onConfirm}
+        confirmText={modal.confirmText}
+      />
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h2 className="text-xl lg:text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
           Course Management
@@ -67,10 +107,11 @@ export default function Courses() {
           {selectedCourses.length > 0 && (
             <div className="flex items-center gap-2 text-sm">
               <span style={{ color: 'var(--color-text-muted)' }}>{selectedCourses.length} selected</span>
-              <button className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ background: '#EF444420', color: '#EF4444' }}>Delete</button>
+              <button onClick={handleBulkDelete} className="px-3 py-1.5 rounded-lg text-xs font-medium" style={{ background: '#EF444420', color: '#EF4444' }}>Delete</button>
             </div>
           )}
           <button
+            onClick={handleCreateCourse}
             className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all inline-flex items-center gap-2"
             style={{ background: 'var(--color-accent)' }}
           >
@@ -173,14 +214,14 @@ export default function Courses() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 mt-4 pt-3 border-t" style={{ borderColor: 'var(--color-border)' }}>
-                  <button className="flex-1 p-1.5 rounded-lg text-xs font-medium transition-colors" style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>Edit</button>
-                  <button onClick={() => handleFeature(course.id)} className="p-1.5 rounded-lg text-xs transition-colors" style={{ background: course.featured ? '#F4D35E30' : 'var(--color-accent-light)', color: course.featured ? '#F4D35E' : 'var(--color-text-muted)' }}>
+                  <button onClick={() => handleEdit(course)} className="flex-1 p-1.5 rounded-lg text-xs font-medium transition-colors" style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>Edit</button>
+                  <button onClick={() => handleFeature(course)} className="p-1.5 rounded-lg text-xs transition-colors" style={{ background: course.featured ? '#F4D35E30' : 'var(--color-accent-light)', color: course.featured ? '#F4D35E' : 'var(--color-text-muted)' }}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill={course.featured ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                   </button>
-                  <button onClick={() => handleArchive(course.id)} className="p-1.5 rounded-lg text-xs transition-colors" style={{ background: 'var(--color-accent-light)', color: 'var(--color-text-muted)' }}>
+                  <button onClick={() => handleArchive(course)} className="p-1.5 rounded-lg text-xs transition-colors" style={{ background: 'var(--color-accent-light)', color: 'var(--color-text-muted)' }}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
                   </button>
-                  <button onClick={() => handleDelete(course.id)} className="p-1.5 rounded-lg text-xs transition-colors" style={{ color: '#EF4444' }}>
+                  <button onClick={() => handleDelete(course)} className="p-1.5 rounded-lg text-xs transition-colors" style={{ color: '#EF4444' }}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                   </button>
                 </div>
@@ -254,13 +295,13 @@ export default function Courses() {
                     </td>
                     <td className="py-3.5 pl-4 pr-4">
                       <div className="flex items-center justify-end gap-1">
-                        <button className="p-1.5 rounded-lg transition-colors" style={{ color: 'var(--color-text-muted)' }}>
+                        <button onClick={() => handleEdit(course)} className="p-1.5 rounded-lg transition-colors" style={{ color: 'var(--color-text-muted)' }}>
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         </button>
-                        <button onClick={() => handleArchive(course.id)} className="p-1.5 rounded-lg transition-colors" style={{ color: 'var(--color-text-muted)' }}>
+                        <button onClick={() => handleArchive(course)} className="p-1.5 rounded-lg transition-colors" style={{ color: 'var(--color-text-muted)' }}>
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
                         </button>
-                        <button onClick={() => handleDelete(course.id)} className="p-1.5 rounded-lg transition-colors" style={{ color: '#EF4444' }}>
+                        <button onClick={() => handleDelete(course)} className="p-1.5 rounded-lg transition-colors" style={{ color: '#EF4444' }}>
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                         </button>
                       </div>
@@ -271,6 +312,78 @@ export default function Courses() {
             </table>
           </div>
         </div>
+      )}
+
+      {editingCourse && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-50" onClick={() => setEditingCourse(null)} />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div
+              className="w-full max-w-lg rounded-2xl p-6 lg:p-8 shadow-xl"
+              style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}
+            >
+              <h3 className="text-xl font-bold mb-6" style={{ color: 'var(--color-text-primary)' }}>Edit Course</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Title</label>
+                  <input
+                    type="text"
+                    value={editForm.title}
+                    onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
+                    style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Category</label>
+                  <input
+                    type="text"
+                    value={editForm.category}
+                    onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
+                    style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Mentor</label>
+                  <input
+                    type="text"
+                    value={editForm.mentor}
+                    onChange={(e) => setEditForm({ ...editForm, mentor: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
+                    style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Price</label>
+                  <input
+                    type="text"
+                    value={editForm.price}
+                    onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
+                    style={{ background: 'var(--color-bg-primary)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}
+                  />
+                </div>
+              </div>
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => setEditingCourse(null)}
+                  className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                  style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors"
+                  style={{ background: 'var(--color-accent)' }}
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   )

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Modal from '../components/Modal'
 
 const initialBatches = [
   { id: 1, name: 'Full Stack Web Dev - Batch 7', course: 'Full Stack Web Development', mentor: 'Vikram Joshi', students: 24, maxStudents: 30, startDate: '01 Jun 2026', endDate: '30 Nov 2026', status: 'Active', schedule: 'Mon/Wed/Fri 6-8 PM' },
@@ -31,6 +32,7 @@ export default function Batches() {
   const [expandedId, setExpandedId] = useState(null)
   const [showCreate, setShowCreate] = useState(false)
   const [statusFilter, setStatusFilter] = useState('All')
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'info' })
   const [form, setForm] = useState({
     name: '', course: '', mentor: '', startDate: '', endDate: '', maxStudents: 30,
   })
@@ -40,6 +42,10 @@ export default function Batches() {
   const toggleExpand = (id) => setExpandedId(expandedId === id ? null : id)
 
   const handleCreate = () => {
+    if (!form.name.trim()) {
+      setModal({ open: true, title: 'Validation Error', message: 'Please enter a batch name.', type: 'warning' })
+      return
+    }
     const newBatch = {
       id: batches.length + 1,
       name: form.name || 'New Batch',
@@ -55,10 +61,22 @@ export default function Batches() {
     setBatches([newBatch, ...batches])
     setShowCreate(false)
     setForm({ name: '', course: '', mentor: '', startDate: '', endDate: '', maxStudents: 30 })
+    setModal({ open: true, title: 'Batch Created', message: `"${newBatch.name}" has been created successfully and is set to Upcoming.`, type: 'success' })
   }
 
   return (
     <div className="space-y-6">
+      <Modal
+        open={modal.open}
+        onClose={() => setModal({ ...modal, open: false })}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        showConfirm={modal.showConfirm}
+        onConfirm={modal.onConfirm}
+        confirmText={modal.confirmText}
+      />
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h2 className="text-xl lg:text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
           Batch Management

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Modal from '../components/Modal'
 
 const initialCategories = [
   { id: 1, name: 'Web Development', courses: 48, color: '#3B82F6' },
@@ -11,20 +12,20 @@ const initialCategories = [
   { id: 8, name: 'Cybersecurity', courses: 12, color: '#1D7874' },
 ]
 
-const pendingCourses = [
+const initialPendingCourses = [
   { id: 1, title: 'Advanced React Patterns', mentor: 'Priya Patel', submitted: '16 Jun 2026', status: 'Pending' },
   { id: 2, title: 'Machine Learning with TensorFlow', mentor: 'Vikram Joshi', submitted: '15 Jun 2026', status: 'Pending' },
   { id: 3, title: 'Kubernetes for Beginners', mentor: 'Arun Kumar', submitted: '14 Jun 2026', status: 'Pending' },
   { id: 4, title: 'Docker & Containerization', mentor: 'Suresh Iyer', submitted: '12 Jun 2026', status: 'Pending' },
 ]
 
-const reportedContent = [
+const initialReportedContent = [
   { id: 1, title: 'Inappropriate comment in Python 101', reporter: 'Neha Gupta', reason: 'Spam', reported: '17 Jun 2026' },
   { id: 2, title: 'Plagiarized content in React course', reporter: 'Rahul Sharma', reason: 'Copyright', reported: '16 Jun 2026' },
   { id: 3, title: 'Offensive material in forum post', reporter: 'Sneha Reddy', reason: 'Harassment', reported: '15 Jun 2026' },
 ]
 
-const resources = [
+const initialResources = [
   { id: 1, name: 'Coding Guidelines Handbook', type: 'PDF', size: '2.4 MB', uploaded: '10 Jun 2026' },
   { id: 2, name: 'API Documentation Template', type: 'DOCX', size: '1.1 MB', uploaded: '08 Jun 2026' },
   { id: 3, name: 'Mentor Onboarding Kit', type: 'ZIP', size: '8.6 MB', uploaded: '05 Jun 2026' },
@@ -34,12 +35,17 @@ const initialTags = ['JavaScript', 'Python', 'React', 'Node.js', 'Machine Learni
 
 export default function Content() {
   const [categories, setCategories] = useState(initialCategories)
+  const [pendingCourses, setPendingCourses] = useState(initialPendingCourses)
+  const [reportedContent, setReportedContent] = useState(initialReportedContent)
+  const [resources, setResources] = useState(initialResources)
   const [tags, setTags] = useState(initialTags)
   const [newCategory, setNewCategory] = useState('')
   const [newTag, setNewTag] = useState('')
   const [editingCat, setEditingCat] = useState(null)
   const [editCatName, setEditCatName] = useState('')
   const [activeTab, setActiveTab] = useState('categories')
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'info' })
+  const [reviewingCourse, setReviewingCourse] = useState(null)
 
   const tabs = [
     { id: 'categories', label: 'Categories' },
@@ -57,10 +63,14 @@ export default function Content() {
       courses: 0,
       color: `#${Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0')}`,
     }])
+    setModal({ open: true, title: 'Category Added', message: `"${newCategory}" has been created successfully.`, type: 'success' })
     setNewCategory('')
   }
 
-  const deleteCategory = (id) => setCategories(categories.filter((c) => c.id !== id))
+  const deleteCategory = (cat) => {
+    setCategories(categories.filter((c) => c.id !== cat.id))
+    setModal({ open: true, title: 'Category Deleted', message: `"${cat.name}" has been removed.`, type: 'success' })
+  }
 
   const startEditCategory = (cat) => {
     setEditingCat(cat.id)
@@ -70,18 +80,82 @@ export default function Content() {
   const saveEditCategory = () => {
     setCategories(categories.map((c) => c.id === editingCat ? { ...c, name: editCatName } : c))
     setEditingCat(null)
+    setModal({ open: true, title: 'Category Updated', message: `Category has been renamed to "${editCatName}".`, type: 'success' })
   }
 
   const addTag = () => {
-    if (!newTag.trim() || tags.includes(newTag.trim())) return
+    if (!newTag.trim() || tags.includes(newTag.trim())) {
+      if (tags.includes(newTag.trim())) {
+        setModal({ open: true, title: 'Duplicate Tag', message: 'This tag already exists.', type: 'warning' })
+      }
+      return
+    }
     setTags([...tags, newTag.trim()])
+    setModal({ open: true, title: 'Tag Added', message: `"${newTag.trim()}" has been added.`, type: 'success' })
     setNewTag('')
   }
 
-  const deleteTag = (tag) => setTags(tags.filter((t) => t !== tag))
+  const deleteTag = (tag) => {
+    setTags(tags.filter((t) => t !== tag))
+    setModal({ open: true, title: 'Tag Deleted', message: `"${tag}" has been removed.`, type: 'success' })
+  }
+
+  const handleApprove = (course) => {
+    setPendingCourses(pendingCourses.filter(c => c.id !== course.id))
+    setModal({ open: true, title: 'Course Approved', message: `"${course.title}" by ${course.mentor} has been approved and is now published.`, type: 'success' })
+  }
+
+  const handleReject = (course) => {
+    setPendingCourses(pendingCourses.filter(c => c.id !== course.id))
+    setModal({ open: true, title: 'Course Rejected', message: `"${course.title}" by ${course.mentor} has been rejected. The mentor will be notified.`, type: 'error' })
+  }
+
+  const handleReview = (course) => {
+    setReviewingCourse(course)
+  }
+
+  const handleKeepContent = (item) => {
+    setReportedContent(reportedContent.filter(r => r.id !== item.id))
+    setModal({ open: true, title: 'Content Kept', message: `"${item.title}" has been reviewed and will remain on the platform.`, type: 'success' })
+  }
+
+  const handleRemoveContent = (item) => {
+    setReportedContent(reportedContent.filter(r => r.id !== item.id))
+    setModal({ open: true, title: 'Content Removed', message: `"${item.title}" has been removed from the platform. The reporter will be notified.`, type: 'success' })
+  }
+
+  const handleUploadResource = () => {
+    const names = ['Student Handbook 2026', 'Code of Conduct', 'API Reference Guide']
+    const types = ['PDF', 'DOCX', 'PDF']
+    const idx = resources.length % 3
+    const newResource = {
+      id: resources.length + 1,
+      name: names[idx],
+      type: types[idx],
+      size: `${(Math.random() * 10 + 1).toFixed(1)} MB`,
+      uploaded: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+    }
+    setResources([...resources, newResource])
+    setModal({ open: true, title: 'Resource Uploaded', message: `"${newResource.name}" has been uploaded successfully.`, type: 'success' })
+  }
+
+  const handleDownloadResource = (res) => {
+    setModal({ open: true, title: 'Download Started', message: `Downloading "${res.name}" (${res.size}).`, type: 'info' })
+  }
 
   return (
     <div className="space-y-6">
+      <Modal
+        open={modal.open}
+        onClose={() => setModal({ ...modal, open: false })}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        showConfirm={modal.showConfirm}
+        onConfirm={modal.onConfirm}
+        confirmText={modal.confirmText}
+      />
+
       <h2 className="text-xl lg:text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
         Content Control Panel
       </h2>
@@ -157,7 +231,7 @@ export default function Content() {
                   ) : (
                     <>
                       <button onClick={() => startEditCategory(cat)} className="text-xs font-medium px-2.5 py-1 rounded-lg transition-colors" style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>Edit</button>
-                      <button onClick={() => deleteCategory(cat.id)} className="text-xs font-medium px-2.5 py-1 rounded-lg transition-colors" style={{ background: '#EF444420', color: '#EF4444' }}>Delete</button>
+                      <button onClick={() => deleteCategory(cat)} className="text-xs font-medium px-2.5 py-1 rounded-lg transition-colors" style={{ background: '#EF444420', color: '#EF4444' }}>Delete</button>
                     </>
                   )}
                 </div>
@@ -172,27 +246,31 @@ export default function Content() {
           <h3 className="font-semibold text-lg mb-4" style={{ color: 'var(--color-text-primary)' }}>
             Pending Course Approvals
           </h3>
-          <div className="space-y-3">
-            {pendingCourses.map((course) => (
-              <div
-                key={course.id}
-                className="p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-                style={{ background: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}
-              >
-                <div>
-                  <p className="font-medium text-sm" style={{ color: 'var(--color-text-primary)' }}>{course.title}</p>
-                  <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
-                    by {course.mentor} • Submitted {course.submitted}
-                  </p>
+          {pendingCourses.length === 0 ? (
+            <p className="text-sm py-8 text-center" style={{ color: 'var(--color-text-muted)' }}>No pending course approvals.</p>
+          ) : (
+            <div className="space-y-3">
+              {pendingCourses.map((course) => (
+                <div
+                  key={course.id}
+                  className="p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  style={{ background: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}
+                >
+                  <div>
+                    <p className="font-medium text-sm" style={{ color: 'var(--color-text-primary)' }}>{course.title}</p>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+                      by {course.mentor} • Submitted {course.submitted}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => handleApprove(course)} className="px-4 py-1.5 rounded-lg text-xs font-semibold text-white transition-all" style={{ background: '#22C55E' }}>Approve</button>
+                    <button onClick={() => handleReject(course)} className="px-4 py-1.5 rounded-lg text-xs font-semibold text-white transition-all" style={{ background: '#EF4444' }}>Reject</button>
+                    <button onClick={() => handleReview(course)} className="px-4 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>Review</button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button className="px-4 py-1.5 rounded-lg text-xs font-semibold text-white transition-all" style={{ background: '#22C55E' }}>Approve</button>
-                  <button className="px-4 py-1.5 rounded-lg text-xs font-semibold text-white transition-all" style={{ background: '#EF4444' }}>Reject</button>
-                  <button className="px-4 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>Review</button>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -201,39 +279,43 @@ export default function Content() {
           <h3 className="font-semibold text-lg mb-4" style={{ color: 'var(--color-text-primary)' }}>
             Reported Content
           </h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-xs uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
-                  <th className="text-left py-3 pr-4 font-medium">Content</th>
-                  <th className="text-left py-3 pr-4 font-medium">Reported By</th>
-                  <th className="text-left py-3 pr-4 font-medium">Reason</th>
-                  <th className="text-left py-3 pr-4 font-medium">Date</th>
-                  <th className="text-right py-3 font-medium">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reportedContent.map((item) => (
-                  <tr key={item.id} className="border-t" style={{ borderColor: 'var(--color-border)' }}>
-                    <td className="py-3.5 pr-4 font-medium" style={{ color: 'var(--color-text-primary)' }}>{item.title}</td>
-                    <td className="py-3.5 pr-4" style={{ color: 'var(--color-text-muted)' }}>{item.reporter}</td>
-                    <td className="py-3.5 pr-4">
-                      <span className="text-xs font-medium px-2.5 py-0.5 rounded-full" style={{ background: '#EF444420', color: '#EF4444' }}>
-                        {item.reason}
-                      </span>
-                    </td>
-                    <td className="py-3.5 pr-4" style={{ color: 'var(--color-text-muted)' }}>{item.reported}</td>
-                    <td className="py-3.5 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white" style={{ background: '#22C55E' }}>Keep</button>
-                        <button className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white" style={{ background: '#EF4444' }}>Remove</button>
-                      </div>
-                    </td>
+          {reportedContent.length === 0 ? (
+            <p className="text-sm py-8 text-center" style={{ color: 'var(--color-text-muted)' }}>No reported content. All clear!</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-xs uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+                    <th className="text-left py-3 pr-4 font-medium">Content</th>
+                    <th className="text-left py-3 pr-4 font-medium">Reported By</th>
+                    <th className="text-left py-3 pr-4 font-medium">Reason</th>
+                    <th className="text-left py-3 pr-4 font-medium">Date</th>
+                    <th className="text-right py-3 font-medium">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {reportedContent.map((item) => (
+                    <tr key={item.id} className="border-t" style={{ borderColor: 'var(--color-border)' }}>
+                      <td className="py-3.5 pr-4 font-medium" style={{ color: 'var(--color-text-primary)' }}>{item.title}</td>
+                      <td className="py-3.5 pr-4" style={{ color: 'var(--color-text-muted)' }}>{item.reporter}</td>
+                      <td className="py-3.5 pr-4">
+                        <span className="text-xs font-medium px-2.5 py-0.5 rounded-full" style={{ background: '#EF444420', color: '#EF4444' }}>
+                          {item.reason}
+                        </span>
+                      </td>
+                      <td className="py-3.5 pr-4" style={{ color: 'var(--color-text-muted)' }}>{item.reported}</td>
+                      <td className="py-3.5 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button onClick={() => handleKeepContent(item)} className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white" style={{ background: '#22C55E' }}>Keep</button>
+                          <button onClick={() => handleRemoveContent(item)} className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white" style={{ background: '#EF4444' }}>Remove</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 
@@ -244,6 +326,7 @@ export default function Content() {
               Platform Resources
             </h3>
             <button
+              onClick={handleUploadResource}
               className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all inline-flex items-center gap-2"
               style={{ background: 'var(--color-accent)' }}
             >
@@ -270,7 +353,11 @@ export default function Content() {
                     <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{res.size} • {res.uploaded}</p>
                   </div>
                 </div>
-                <button className="p-2 rounded-lg transition-colors" style={{ color: 'var(--color-text-muted)' }}>
+                <button
+                  onClick={() => handleDownloadResource(res)}
+                  className="p-2 rounded-lg transition-colors"
+                  style={{ color: 'var(--color-text-muted)' }}
+                >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 </button>
               </div>
@@ -314,6 +401,54 @@ export default function Content() {
             ))}
           </div>
         </div>
+      )}
+
+      {reviewingCourse && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-50" onClick={() => setReviewingCourse(null)} />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div
+              className="w-full max-w-lg rounded-2xl p-6 lg:p-8 shadow-xl"
+              style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}
+            >
+              <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--color-text-primary)' }}>Course Review</h3>
+              <div className="space-y-3 mb-6">
+                <div>
+                  <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Title</p>
+                  <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>{reviewingCourse.title}</p>
+                </div>
+                <div>
+                  <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Mentor</p>
+                  <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>{reviewingCourse.mentor}</p>
+                </div>
+                <div>
+                  <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Submitted</p>
+                  <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>{reviewingCourse.submitted}</p>
+                </div>
+                <div>
+                  <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Status</p>
+                  <p className="text-sm font-medium" style={{ color: '#F59E0B' }}>{reviewingCourse.status} — Awaiting Review</p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { handleReject(reviewingCourse); setReviewingCourse(null) }}
+                  className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors"
+                  style={{ background: '#EF4444' }}
+                >
+                  Reject
+                </button>
+                <button
+                  onClick={() => { handleApprove(reviewingCourse); setReviewingCourse(null) }}
+                  className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors"
+                  style={{ background: '#22C55E' }}
+                >
+                  Approve
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   )

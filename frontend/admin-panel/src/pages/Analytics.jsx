@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Modal from '../components/Modal'
 
 const overviewStats = [
   { label: 'Total Users', value: '24,891', change: '+12.5%', icon: 'users' },
@@ -29,9 +30,21 @@ const demographics = [
 
 export default function Analytics() {
   const [dateRange, setDateRange] = useState('yearly')
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'info' })
 
   return (
     <div className="space-y-6">
+      <Modal
+        open={modal.open}
+        onClose={() => setModal({ ...modal, open: false })}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        showConfirm={modal.showConfirm}
+        onConfirm={modal.onConfirm}
+        confirmText={modal.confirmText}
+      />
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h2 className="text-xl lg:text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
           Platform Analytics
@@ -48,6 +61,7 @@ export default function Analytics() {
             <option value="yearly">Yearly</option>
           </select>
           <button
+            onClick={() => setModal({ open: true, title: 'Export Started', message: `Analytics report for ${dateRange} data is being generated and will download shortly.`, type: 'success' })}
             className="px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all"
             style={{ background: 'var(--color-accent)' }}
           >
@@ -193,33 +207,6 @@ export default function Analytics() {
           <div className="flex items-center justify-center">
             <div className="relative w-40 h-40">
               <svg viewBox="0 0 36 36" className="w-full h-full">
-                {demographics.reduce((acc, seg, i) => {
-                  const prevAngle = acc.reduce((s, a) => s + a, 0)
-                  const angle = (seg.value / 100) * 360
-                  const startAngle = prevAngle - 90
-                  const endAngle = startAngle + angle
-                  const x1 = 18 + 16 * Math.cos((startAngle * Math.PI) / 180)
-                  const y1 = 18 + 16 * Math.sin((startAngle * Math.PI) / 180)
-                  const x2 = 18 + 16 * Math.cos((endAngle * Math.PI) / 180)
-                  const y2 = 18 + 16 * Math.sin((endAngle * Math.PI) / 180)
-                  const largeArc = angle > 180 ? 1 : 0
-                  acc.push(angle)
-                  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-                  return acc
-                }, [])}
-                {demographics.reduce((els, seg, i) => {
-                  const prevTotal = els.length > 0 ? els.slice(0, i).reduce((s, a) => s + a, 0) : 0
-                  const angle = (seg.value / 100) * 360
-                  const startAngle = prevTotal - 90
-                  const endAngle = startAngle + angle
-                  const x1 = 18 + 16 * Math.cos((startAngle * Math.PI) / 180)
-                  const y1 = 18 + 16 * Math.sin((startAngle * Math.PI) / 180)
-                  const x2 = 18 + 16 * Math.cos((endAngle * Math.PI) / 180)
-                  const y2 = 18 + 16 * Math.sin((endAngle * Math.PI) / 180)
-                  const largeArc = angle > 180 ? 1 : 0
-                  els.push(angle)
-                  return els
-                }, [])}
                 {(() => {
                   let total = 0
                   return demographics.map((seg, i) => {
@@ -267,7 +254,13 @@ export default function Analytics() {
           <h3 className="font-semibold text-lg" style={{ color: 'var(--color-text-primary)' }}>
             Top Performing Courses
           </h3>
-          <button className="text-xs font-medium" style={{ color: 'var(--color-accent)' }}>View All</button>
+          <button
+            onClick={() => setModal({ open: true, title: 'All Courses', message: 'Navigate to Course Management page to view all course analytics and performance data.', type: 'info' })}
+            className="text-xs font-medium"
+            style={{ color: 'var(--color-accent)' }}
+          >
+            View All
+          </button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">

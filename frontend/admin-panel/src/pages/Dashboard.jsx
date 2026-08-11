@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Modal from '../components/Modal'
 
 const stats = [
   { label: 'Total Users', value: '24,891', change: '+12%' },
@@ -39,6 +40,7 @@ const systemHealth = [
 
 export default function Dashboard() {
   const [showAllActivity, setShowAllActivity] = useState(false)
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'info' })
 
   const roleBadge = (role) => {
     return (
@@ -53,6 +55,17 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
+      <Modal
+        open={modal.open}
+        onClose={() => setModal({ ...modal, open: false })}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        showConfirm={modal.showConfirm}
+        onConfirm={modal.onConfirm}
+        confirmText={modal.confirmText}
+      />
+
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
         <div>
           <h2 className="text-2xl lg:text-3xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
@@ -64,12 +77,14 @@ export default function Dashboard() {
         </div>
         <div className="flex gap-3">
           <button
+            onClick={() => setModal({ open: true, title: 'Report Downloaded', message: 'Your dashboard report has been generated and downloaded successfully.', type: 'success' })}
             className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200"
             style={{ background: 'var(--color-accent)' }}
           >
             Download Report
           </button>
           <button
+            onClick={() => setModal({ open: true, title: 'Dashboard Refreshed', message: 'All dashboard data has been refreshed with the latest information.', type: 'success' })}
             className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200"
             style={{ background: 'var(--color-accent-light)', color: 'var(--color-accent)' }}
           >
@@ -181,7 +196,13 @@ export default function Dashboard() {
         <div className="lg:col-span-2 glass-card p-5 lg:p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-lg" style={{ color: 'var(--color-text-primary)' }}>Recent Registrations</h3>
-            <button className="text-xs font-medium" style={{ color: 'var(--color-accent)' }}>View All</button>
+            <button
+              onClick={() => setModal({ open: true, title: 'All Registrations', message: `Showing all ${recentRegistrations.length} recent users. Navigate to Users page for full management.`, type: 'info' })}
+              className="text-xs font-medium"
+              style={{ color: 'var(--color-accent)' }}
+            >
+              View All
+            </button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -223,6 +244,15 @@ export default function Dashboard() {
             {quickActions.map((action) => (
               <button
                 key={action.label}
+                onClick={() => {
+                  const messages = {
+                    'Add User': 'Redirecting to User Management to add a new user.',
+                    'Create Batch': 'Redirecting to Batch Management to create a new batch.',
+                    'View Reports': 'Opening detailed platform reports and analytics.',
+                    'Payouts': 'Opening payment processing dashboard for mentor payouts.',
+                  }
+                  setModal({ open: true, title: action.label, message: messages[action.label], type: 'info' })
+                }}
                 className="p-4 rounded-xl text-left transition-all duration-200 hover:scale-[1.02]"
                 style={{ background: 'var(--color-accent-light)' }}
               >
