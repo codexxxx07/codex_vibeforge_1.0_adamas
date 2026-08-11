@@ -41,7 +41,7 @@ export default function MentorPortal() {
         <p className="text-sm mb-6" style={{ color: "var(--color-text-muted)" }}>
           Access the Mentor Portal to manage your courses and students.
         </p>
-        <a href="http://localhost:5175" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold no-underline transition-all hover:scale-105"
+        <a href={import.meta.env.VITE_MENTOR_URL} className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold no-underline transition-all hover:scale-105"
           style={{ background: "#EE964B", color: "#fff" }}>
           Open Mentor Portal →
         </a>

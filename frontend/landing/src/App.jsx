@@ -17,9 +17,9 @@ import NotFound from "./pages/NotFound";
 
 // ─── Hardcoded credentials ───────────────────────────────────────────────────
 const CREDENTIALS = {
-  student: { email: "student@college.edu", password: "student123", url: "http://localhost:5174" },
-  mentor:  { email: "mentor@college.edu",  password: "mentor123",  url: "http://localhost:5175" },
-  admin:   { email: "admin@college.edu",   password: "admin123",   url: "http://localhost:5176" },
+  student: { email: "student@college.edu", password: "student123", url: import.meta.env.VITE_STUDENT_URL },
+  mentor:  { email: "mentor@college.edu",  password: "mentor123",  url: import.meta.env.VITE_MENTOR_URL },
+  admin:   { email: "admin@college.edu",   password: "admin123",   url: import.meta.env.VITE_ADMIN_URL },
 };
 
 // ─── Login Modal ─────────────────────────────────────────────────────────────

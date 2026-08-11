@@ -41,7 +41,7 @@ export default function StudentPortal() {
         <p className="text-sm mb-6" style={{ color: "var(--color-text-muted)" }}>
           Access the Student Portal to begin your journey.
         </p>
-        <a href="http://localhost:5174" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold no-underline transition-all hover:scale-105"
+        <a href={import.meta.env.VITE_STUDENT_URL} className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold no-underline transition-all hover:scale-105"
           style={{ background: "#1D7874", color: "#fff" }}>
           Open Student Portal →
         </a>

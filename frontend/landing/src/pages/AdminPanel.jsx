@@ -41,7 +41,7 @@ export default function AdminPanel() {
         <p className="text-sm mb-6" style={{ color: "var(--color-text-muted)" }}>
           Access the Admin Panel to manage the entire platform.
         </p>
-        <a href="http://localhost:5176" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold no-underline transition-all hover:scale-105"
+        <a href={import.meta.env.VITE_ADMIN_URL} className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold no-underline transition-all hover:scale-105"
           style={{ background: "#F4D35E", color: "#262626" }}>
           Open Admin Panel →
         </a>
