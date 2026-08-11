@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import { useTheme } from "./ThemeContext";
-import StudentPortal from "./pages/StudentPortal";
-import MentorPortal from "./pages/MentorPortal";
-import AdminPanel from "./pages/AdminPanel";
+import StudentPortal from "./portals/student/StudentPortal";
+import MentorPortal from "./portals/mentor/MentorPortal";
+import AdminPortal from "./portals/admin/AdminPortal";
 import MobileApp from "./pages/MobileApp";
 import HelpCenter from "./pages/HelpCenter";
 import Documentation from "./pages/Documentation";
@@ -17,9 +17,9 @@ import NotFound from "./pages/NotFound";
 
 // ─── Hardcoded credentials ───────────────────────────────────────────────────
 const CREDENTIALS = {
-  student: { email: "student@college.edu", password: "student123", url: import.meta.env.VITE_STUDENT_URL },
-  mentor:  { email: "mentor@college.edu",  password: "mentor123",  url: import.meta.env.VITE_MENTOR_URL },
-  admin:   { email: "admin@college.edu",   password: "admin123",   url: import.meta.env.VITE_ADMIN_URL },
+  student: { email: "student@college.edu", password: "student123", path: "/student" },
+  mentor:  { email: "mentor@college.edu",  password: "mentor123",  path: "/mentor" },
+  admin:   { email: "admin@college.edu",   password: "admin123",   path: "/admin" },
 };
 
 // ─── Login Modal ─────────────────────────────────────────────────────────────
@@ -27,6 +27,7 @@ function LoginModal({ portalId, portalTitle, portalColor, onClose }) {
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");   
   const [error, setError]       = useState("");
+  const navigate = useNavigate();
 
   function handleLogin(e) {
     e.preventDefault();
@@ -34,8 +35,8 @@ function LoginModal({ portalId, portalTitle, portalColor, onClose }) {
     if (email === cred.email && password === cred.password) {
       localStorage.setItem("isAuthenticated", "true");
       localStorage.setItem("role", portalId);
-      console.log(`[Login] Auth set for role=${portalId}, redirecting to ${cred.url}`);
-      window.location.href = `${cred.url}?role=${portalId}&auth=true`;
+      console.log(`[Login] Auth set for role=${portalId}, redirecting to ${cred.path}`);
+      navigate(`${cred.path}?role=${portalId}&auth=true`);
     } else {
       setError("Invalid credentials");
     }
@@ -226,10 +227,10 @@ export default function App() {
             </a>
           ))}
           <ThemeToggle />
-          <a href="/student-web" className="text-sm font-bold px-5 py-2 rounded-lg no-underline transition-all hover:scale-105"
+          <Link to="/student" className="text-sm font-bold px-5 py-2 rounded-lg no-underline transition-all hover:scale-105"
             style={{ background: "var(--color-accent)", color: "#fff" }}>
             Get Started
-          </a>
+          </Link>
         </div>
 
         <div className="flex md:hidden items-center gap-3">
@@ -251,9 +252,9 @@ export default function App() {
               {item}
             </a>
           ))}
-          <a href="/student-web" className="text-base font-bold px-6 py-3 rounded-lg no-underline" style={{ background: "var(--color-accent)", color: "#fff" }}>
+          <Link to="/student" className="text-base font-bold px-6 py-3 rounded-lg no-underline" style={{ background: "var(--color-accent)", color: "#fff" }}>
             Get Started
-          </a>
+          </Link>
         </div>
       )}
 
@@ -275,13 +276,13 @@ export default function App() {
             Shipwise is a complete SaaS platform for technical education — with dedicated portals for students, mentors, and administrators.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <a href="/student-web" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-bold no-underline transition-all hover:scale-105 hover:-translate-y-1"
+            <Link to="/student" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-bold no-underline transition-all hover:scale-105 hover:-translate-y-1"
               style={{ background: "var(--color-accent)", color: "#fff", boxShadow: "0 4px 20px var(--color-glow-strong)" }}>
               Start Learning
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
-            </a>
+            </Link>
             <a href="#portals" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-semibold no-underline transition-all hover:scale-105 hover:-translate-y-1"
               style={{ border: "1px solid var(--color-border)", color: "var(--color-text-primary)" }}>
               Explore Portals
@@ -372,14 +373,14 @@ export default function App() {
               Join thousands of learners, mentors, and institutions who trust Shipwise for their technical education needs.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <a href="/student-web" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-bold no-underline transition-all hover:scale-105"
+              <Link to="/student" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-bold no-underline transition-all hover:scale-105"
                 style={{ background: "var(--color-accent)", color: "#fff" }}>
                 Start Learning Free
-              </a>
-              <a href="/mentor-web" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-semibold no-underline transition-all hover:scale-105"
+              </Link>
+              <Link to="/mentor" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-semibold no-underline transition-all hover:scale-105"
                 style={{ border: "1px solid var(--color-border)", color: "var(--color-text-primary)" }}>
                 Become a Mentor
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -423,9 +424,12 @@ export default function App() {
       </footer>
     </div>
       } />
+      <Route path="/student" element={<StudentPortal />} />
+      <Route path="/mentor" element={<MentorPortal />} />
+      <Route path="/admin" element={<AdminPortal />} />
       <Route path="/student-portal" element={<StudentPortal />} />
       <Route path="/mentor-portal" element={<MentorPortal />} />
-      <Route path="/admin-panel" element={<AdminPanel />} />
+      <Route path="/admin-panel" element={<AdminPortal />} />
       <Route path="/mobile-app" element={<MobileApp />} />
       <Route path="/help-center" element={<HelpCenter />} />
       <Route path="/documentation" element={<Documentation />} />
