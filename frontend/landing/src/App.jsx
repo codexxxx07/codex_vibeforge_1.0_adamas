@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import { useTheme } from "./ThemeContext";
 import StudentPortal from "./portals/student/StudentPortal";
@@ -187,6 +187,80 @@ const features = [
   { icon: "🔗", title: "Open Source Focus", desc: "GitHub-integrated learning. Build your open source portfolio as you learn." },
 ];
 
+const heroStats = [
+  { value: 5, suffix: "K+", label: "Active Learners" },
+  { value: 120, suffix: "+", label: "Active Courses" },
+  { value: 92, suffix: "%", label: "Success Rate" },
+  { value: 4.5, suffix: "★", label: "Average Rating" },
+];
+
+function StatsSection() {
+  const rowRef = useRef(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const el = rowRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={rowRef} className={`stats-row${inView ? " is-inview" : ""}`}>
+      {heroStats.map((s) => (
+        <CounterCard key={s.label} {...s} started={inView} />
+      ))}
+    </div>
+  );
+}
+
+function CounterCard({ value, suffix, label, started }) {
+  const [display, setDisplay] = useState(0);
+  const ranRef = useRef(false);
+
+  useEffect(() => {
+    if (!started || ranRef.current) return;
+    ranRef.current = true;
+    let raf;
+    const duration = 1800;
+    const start = performance.now();
+    const step = (now) => {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 4);
+      setDisplay(value * eased);
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [started, value]);
+
+  const decimals = Number.isInteger(value) ? 0 : 1;
+  const text = display.toFixed(decimals);
+
+  return (
+    <div className="skew-stat">
+      <div className="skew-stat-card">
+        <div className="skew-stat-content">
+          <div className="skew-stat-value">
+            {text}
+            <span className="skew-stat-suffix">{suffix}</span>
+          </div>
+          <div className="skew-stat-label">{label}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const { dark } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -288,19 +362,7 @@ export default function App() {
               Explore Portals
             </a>
           </div>
-          <div className="flex flex-wrap justify-center gap-8 sm:gap-12 mt-16">
-            {[
-              { num: "5K+", label: "Active Learners" },
-              { num: "120+", label: "Expert Courses" },
-              { num: "92%", label: "Success Rate" },
-              { num: "4.8★", label: "Avg Rating" },
-            ].map((s) => (
-              <div key={s.label} className="text-center">
-                <div className="text-3xl sm:text-4xl font-extrabold" style={{ color: "var(--color-accent)" }}>{s.num}</div>
-                <div className="text-sm mt-1 font-medium" style={{ color: "var(--color-text-muted)" }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
+          <StatsSection />
         </div>
       </section>
 

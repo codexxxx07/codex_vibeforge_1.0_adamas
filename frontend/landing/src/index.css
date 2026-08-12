@@ -74,3 +74,107 @@ body {
   box-shadow: 0 6px 20px rgba(2, 6, 23, 0.45);
   border-color: rgba(148, 163, 184, 0.35);
 }
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+  margin-top: 56px;
+}
+
+@media (min-width: 1024px) {
+  .stats-row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+.stats-row .skew-stat {
+  --tilt: 0deg;
+  position: relative;
+  opacity: 0;
+  transform: skewX(-1.6deg) rotate(var(--tilt)) translateY(18px);
+  transition: opacity 0.7s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stats-row .skew-stat:nth-child(odd) { --tilt: 0.45deg; }
+.stats-row .skew-stat:nth-child(even) { --tilt: -0.45deg; }
+.stats-row .skew-stat:nth-child(2) { transition-delay: 0.1s; }
+.stats-row .skew-stat:nth-child(3) { transition-delay: 0.18s; }
+.stats-row .skew-stat:nth-child(4) { transition-delay: 0.26s; }
+
+.stats-row.is-inview .skew-stat {
+  opacity: 1;
+  transform: skewX(-1.6deg) rotate(var(--tilt)) translateY(0);
+}
+
+.skew-stat::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  transform: translateY(7px);
+  z-index: 0;
+  opacity: 0.7;
+}
+
+.skew-stat-card {
+  position: relative;
+  z-index: 1;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  padding: 24px 16px;
+  text-align: center;
+  box-shadow:
+    0 1px 2px rgba(2, 6, 23, 0.05),
+    0 4px 10px rgba(2, 6, 23, 0.06),
+    0 12px 26px rgba(2, 6, 23, 0.06);
+}
+
+.dark .skew-stat-card {
+  background: var(--color-bg-card);
+  border-color: rgba(148, 163, 184, 0.14);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.35),
+    0 4px 10px rgba(0, 0, 0, 0.26),
+    0 14px 28px rgba(0, 0, 0, 0.3);
+}
+
+.dark .skew-stat::before {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(148, 163, 184, 0.1);
+}
+
+.skew-stat-content {
+  transform: skewX(1.6deg);
+}
+
+.skew-stat-value {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent);
+}
+
+.skew-stat-suffix {
+  color: var(--color-accent);
+}
+
+.skew-stat-label {
+  margin-top: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--color-text-muted);
+}
+
+@media (min-width: 640px) {
+  .skew-stat-card { padding: 28px 20px; }
+  .skew-stat-value { font-size: 34px; }
+}
