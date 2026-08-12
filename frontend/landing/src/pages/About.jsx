@@ -15,14 +15,14 @@ export default function About() {
         Company
       </span>
       <h1 className="text-4xl sm:text-5xl font-black tracking-tight mb-4">About Us</h1>
-      <p className="text-lg mb-10 leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+      <p className="text-lg mb-10 leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
         We're on a mission to make technical education accessible, effective, and engaging for everyone.
       </p>
 
       <div className="space-y-8">
         <div className="glass-card p-8">
           <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
-          <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+          <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
             Shipwise was founded with a simple belief: quality technical education should be accessible to every student, regardless of their background or location. We build tools that empower educators to teach effectively and students to learn efficiently.
           </p>
         </div>
@@ -42,10 +42,10 @@ export default function About() {
 
         <div className="glass-card p-8">
           <h2 className="text-2xl font-bold mb-4">Our Story</h2>
-          <p className="text-sm leading-relaxed mb-4" style={{ color: "var(--color-text-muted)" }}>
+          <p className="text-sm leading-relaxed mb-4" style={{ color: "var(--color-text-secondary)" }}>
             Started in 2024, Shipwise grew from a small idea into a comprehensive SaaS platform serving students, mentors, and institutions across the country. Our team of educators and engineers works tirelessly to bridge the gap between traditional education and the demands of the modern tech industry.
           </p>
-          <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+          <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
             From live interactive classes to AI-powered tutoring, from browser-based practice labs to comprehensive analytics — every feature is designed with one goal in mind: helping learners succeed.
           </p>
         </div>
@@ -61,7 +61,7 @@ export default function About() {
             ].map((v) => (
               <div key={v.title}>
                 <h3 className="text-base font-bold mb-1">{v.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>{v.desc}</p>
+                <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>{v.desc}</p>
               </div>
             ))}
           </div>

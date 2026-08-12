@@ -15,7 +15,7 @@ export default function HelpCenter() {
         Resources
       </span>
       <h1 className="text-4xl sm:text-5xl font-black tracking-tight mb-4">Help Center</h1>
-      <p className="text-lg mb-10 leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+      <p className="text-lg mb-10 leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
         Find answers to common questions, step-by-step guides, and troubleshooting tips for all Shipwise features.
       </p>
 
@@ -30,7 +30,7 @@ export default function HelpCenter() {
         ].map((item, i) => (
           <div key={i} className="glass-card p-6">
             <h3 className="text-base font-bold mb-2">{item.q}</h3>
-            <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>{item.a}</p>
+            <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>{item.a}</p>
           </div>
         ))}
       </div>

@@ -15,7 +15,7 @@ export default function Careers() {
         Company
       </span>
       <h1 className="text-4xl sm:text-5xl font-black tracking-tight mb-4">Careers</h1>
-      <p className="text-lg mb-10 leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+      <p className="text-lg mb-10 leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
         Join our team and help build the future of technical education. We're always looking for talented people who share our passion.
       </p>
 
@@ -31,7 +31,7 @@ export default function Careers() {
           <div key={job.title} className="glass-card p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-bold mb-1">{job.title}</h3>
-              <p className="text-sm leading-relaxed mb-2" style={{ color: "var(--color-text-muted)" }}>{job.desc}</p>
+              <p className="text-sm leading-relaxed mb-2" style={{ color: "var(--color-text-secondary)" }}>{job.desc}</p>
               <div className="flex gap-3">
                 <span className="text-xs font-medium px-3 py-1 rounded-full"
                   style={{ background: "var(--color-accent-light)", color: "var(--color-accent)" }}>{job.type}</span>

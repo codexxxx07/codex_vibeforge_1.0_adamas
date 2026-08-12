@@ -7,6 +7,7 @@
   --color-bg-secondary: #F0FDFA;
   --color-bg-card: #FFFFFF;
   --color-text-primary: #262626;
+  --color-text-secondary: #64748B;
   --color-text-muted: #64748B;
   --color-border: rgba(29, 120, 116, 0.18);
   --color-accent: #1D7874;
@@ -18,16 +19,17 @@
 
 .dark {
   --color-bg-primary: #0F172A;
-  --color-bg-secondary: #0E1A1C;
+  --color-bg-secondary: #131E33;
   --color-bg-card: #1E293B;
   --color-text-primary: #F1F5F9;
+  --color-text-secondary: #B6C2D4;
   --color-text-muted: #94A3B8;
-  --color-border: rgba(45, 212, 191, 0.16);
+  --color-border: rgba(148, 163, 184, 0.16);
   --color-accent: #2BB3AB;
-  --color-accent-strong: #1D7874;
+  --color-accent-strong: #1FA09A;
   --color-accent-light: rgba(43, 179, 171, 0.12);
-  --color-glow: rgba(43, 179, 171, 0.18);
-  --color-glow-strong: rgba(43, 179, 171, 0.3);
+  --color-glow: rgba(43, 179, 171, 0.1);
+  --color-glow-strong: rgba(43, 179, 171, 0.22);
 }
 
 html { scroll-behavior: smooth; }
@@ -43,7 +45,6 @@ body {
   background: var(--color-bg-card);
   border: 1px solid var(--color-border);
   border-radius: 16px;
-  backdrop-filter: blur(16px);
   transition: all 0.3s ease;
 }
 
@@ -67,4 +68,9 @@ body {
 .glass-card:hover {
   box-shadow: 0 8px 32px var(--color-glow);
   border-color: var(--color-accent);
+}
+
+.dark .glass-card:hover {
+  box-shadow: 0 6px 20px rgba(2, 6, 23, 0.45);
+  border-color: rgba(148, 163, 184, 0.35);
 }

@@ -272,7 +272,7 @@ export default function App() {
             Navigate Knowledge <br />
             <span style={{ color: "var(--color-accent)" }}>Wisely</span>
           </h1>
-          <p className="text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+          <p className="text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
             Shipwise is a complete SaaS platform for technical education — with dedicated portals for students, mentors, and administrators.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
@@ -313,7 +313,7 @@ export default function App() {
               Platform Features
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4">Everything You Need to Succeed</h2>
-            <p className="text-base sm:text-lg max-w-xl mx-auto" style={{ color: "var(--color-text-muted)" }}>
+            <p className="text-base sm:text-lg max-w-xl mx-auto" style={{ color: "var(--color-text-secondary)" }}>
               Built for modern technical education — from live classes to AI-powered tutoring.
             </p>
           </div>
@@ -322,7 +322,7 @@ export default function App() {
               <div key={f.title} className="glass-card p-6 sm:p-8 hover:-translate-y-1">
                 <div className="text-3xl mb-4">{f.icon}</div>
                 <h3 className="text-lg font-bold mb-2">{f.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>{f.desc}</p>
+                <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>{f.desc}</p>
               </div>
             ))}
           </div>
@@ -338,7 +338,7 @@ export default function App() {
               Three Portals
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4">One Platform, Three Perspectives</h2>
-            <p className="text-base sm:text-lg max-w-xl mx-auto" style={{ color: "var(--color-text-muted)" }}>
+            <p className="text-base sm:text-lg max-w-xl mx-auto" style={{ color: "var(--color-text-secondary)" }}>
               Each portal is purpose-built for its audience — no clutter, just what you need.
             </p>
           </div>
@@ -347,7 +347,7 @@ export default function App() {
               <button key={p.id} onClick={() => setActivePortal(p)} className="btn-3d glass-card p-6 sm:p-8 block group hover:-translate-y-2 text-left w-full"
                 style={{ borderTop: `3px solid ${p.color}`, cursor: "pointer" }}>
                 <h3 className="text-xl font-bold mb-3 group-hover:opacity-80 transition-opacity" style={{ color: p.color }}>{p.title}</h3>
-                <p className="text-sm mb-5 leading-relaxed" style={{ color: "var(--color-text-muted)" }}>{p.desc}</p>
+                <p className="text-sm mb-5 leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>{p.desc}</p>
                 <div className="flex flex-wrap gap-2 mb-6">
                   {p.features.map((f) => (
                     <span key={f} className="text-xs font-medium px-3 py-1 rounded-full"
@@ -369,7 +369,7 @@ export default function App() {
           <div className="glass-card p-10 sm:p-16">
             <span className="text-5xl mb-4 block">🧭</span>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4">Ready to Navigate Knowledge Wisely?</h2>
-            <p className="text-base sm:text-lg max-w-lg mx-auto mb-8" style={{ color: "var(--color-text-muted)" }}>
+            <p className="text-base sm:text-lg max-w-lg mx-auto mb-8" style={{ color: "var(--color-text-secondary)" }}>
               Join thousands of learners, mentors, and institutions who trust Shipwise for their technical education needs.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
@@ -393,7 +393,7 @@ export default function App() {
             <div className="flex items-center gap-2 text-lg font-extrabold mb-4">
               <span>🧭</span> Ship<span style={{ color: "var(--color-accent)" }}>wise</span>
             </div>
-            <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+            <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
               Navigate Knowledge Wisely. A complete SaaS platform for technical education.
             </p>
           </div>

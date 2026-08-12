@@ -15,7 +15,7 @@ export default function MobileApp() {
         Platform
       </span>
       <h1 className="text-4xl sm:text-5xl font-black tracking-tight mb-4">Mobile App</h1>
-      <p className="text-lg mb-10 leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+      <p className="text-lg mb-10 leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
         Learn on the go with the Shipwise mobile app — optimized for low bandwidth, offline access, and a seamless learning experience anywhere.
       </p>
 
@@ -31,14 +31,14 @@ export default function MobileApp() {
           <div key={item.title} className="glass-card p-6 hover:-translate-y-1">
             <div className="text-2xl mb-3">{item.icon}</div>
             <h3 className="text-lg font-bold mb-2">{item.title}</h3>
-            <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>{item.desc}</p>
+            <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>{item.desc}</p>
           </div>
         ))}
       </div>
 
       <div className="mt-10 glass-card p-8 text-center">
         <h3 className="text-xl font-bold mb-3">Coming Soon</h3>
-        <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
+        <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
           The Shipwise mobile app is currently in development. Stay tuned for launch announcements!
         </p>
       </div>

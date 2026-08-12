@@ -32,7 +32,7 @@ export default function Privacy() {
         ].map((section) => (
           <div key={section.title} className="glass-card p-6">
             <h2 className="text-lg font-bold mb-3">{section.title}</h2>
-            <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>{section.content}</p>
+            <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>{section.content}</p>
           </div>
         ))}
       </div>

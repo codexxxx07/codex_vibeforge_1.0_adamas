@@ -15,7 +15,7 @@ export default function ApiStatus() {
         Resources
       </span>
       <h1 className="text-4xl sm:text-5xl font-black tracking-tight mb-4">API Status</h1>
-      <p className="text-lg mb-10 leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+      <p className="text-lg mb-10 leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
         Real-time status and uptime monitoring for all Shipwise services and APIs.
       </p>
 
