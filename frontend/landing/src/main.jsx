@@ -5,15 +5,18 @@ import 'lenis/dist/lenis.css'
 import './index.css'
 import App from './App.jsx'
 import SmoothScroll from './components/SmoothScroll.jsx'
+import ScrollFade from './components/ScrollFade.jsx'
 import { ThemeProvider } from './ThemeContext'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ThemeProvider>
       <BrowserRouter>
-        <SmoothScroll>
-          <App />
-        </SmoothScroll>
+        <ScrollFade>
+          <SmoothScroll>
+            <App />
+          </SmoothScroll>
+        </ScrollFade>
       </BrowserRouter>
     </ThemeProvider>
   </StrictMode>,
