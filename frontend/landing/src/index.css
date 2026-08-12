@@ -45,6 +45,23 @@ body {
   transition: all 0.3s ease;
 }
 
+.btn-3d {
+  box-shadow: 0 1px 2px rgba(2, 6, 23, 0.06), 0 4px 12px rgba(2, 6, 23, 0.10);
+  transition: all 0.25s ease;
+}
+
+.btn-3d:hover {
+  box-shadow: 0 2px 4px rgba(2, 6, 23, 0.08), 0 8px 18px rgba(2, 6, 23, 0.14);
+}
+
+.dark .btn-3d {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.28);
+}
+
+.dark .btn-3d:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35), 0 8px 18px rgba(0, 0, 0, 0.38);
+}
+
 .glass-card:hover {
   box-shadow: 0 8px 32px var(--color-glow);
   border-color: var(--color-accent);

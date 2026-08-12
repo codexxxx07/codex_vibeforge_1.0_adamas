@@ -58,7 +58,7 @@ function LoginModal({ portalId, portalTitle, portalColor, onClose }) {
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg"
+          className="btn-3d absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg"
           style={{ color: "var(--color-text-muted)" }}
           aria-label="Close"
         >
@@ -115,7 +115,7 @@ function LoginModal({ portalId, portalTitle, portalColor, onClose }) {
 
           <button
             type="submit"
-            className="mt-1 px-4 py-2.5 rounded-xl text-sm font-bold transition-all hover:opacity-90"
+            className="btn-3d mt-1 px-4 py-2.5 rounded-xl text-sm font-bold transition-all hover:opacity-90"
             style={{ background: portalColor, color: "#fff" }}
           >
             Login
@@ -131,7 +131,7 @@ function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      className="w-9 h-9 rounded-lg flex items-center justify-center border transition-all duration-300 hover:scale-110 hover:rotate-12"
+      className="btn-3d w-9 h-9 rounded-lg flex items-center justify-center border transition-all duration-300 hover:scale-110 hover:rotate-12"
       style={{
         borderColor: "var(--color-border)",
         color: "var(--color-text-muted)",
@@ -227,7 +227,7 @@ export default function App() {
             </a>
           ))}
           <ThemeToggle />
-          <Link to="/student" className="text-sm font-bold px-5 py-2 rounded-lg no-underline transition-all hover:scale-105"
+          <Link to="/student" className="btn-3d text-sm font-bold px-5 py-2 rounded-lg no-underline transition-all hover:scale-105"
             style={{ background: "var(--color-accent)", color: "#fff" }}>
             Get Started
           </Link>
@@ -235,7 +235,7 @@ export default function App() {
 
         <div className="flex md:hidden items-center gap-3">
           <ThemeToggle />
-          <button onClick={() => setMenuOpen(!menuOpen)} className="flex flex-col gap-1.5 p-2 bg-transparent border-none cursor-pointer" aria-label="Menu">
+          <button onClick={() => setMenuOpen(!menuOpen)} className="btn-3d flex flex-col gap-1.5 p-2 bg-transparent border-none cursor-pointer" aria-label="Menu">
             <span className="block w-6 h-0.5 rounded transition-all" style={{ background: "var(--color-text-primary)", transform: menuOpen ? "rotate(45deg) translateY(5px)" : "" }}></span>
             <span className="block w-6 h-0.5 rounded transition-all" style={{ background: "var(--color-text-primary)", opacity: menuOpen ? 0 : 1 }}></span>
             <span className="block w-6 h-0.5 rounded transition-all" style={{ background: "var(--color-text-primary)", transform: menuOpen ? "rotate(-45deg) translateY(-5px)" : "" }}></span>
@@ -252,7 +252,7 @@ export default function App() {
               {item}
             </a>
           ))}
-          <Link to="/student" className="text-base font-bold px-6 py-3 rounded-lg no-underline" style={{ background: "var(--color-accent)", color: "#fff" }}>
+          <Link to="/student" className="btn-3d text-base font-bold px-6 py-3 rounded-lg no-underline" style={{ background: "var(--color-accent)", color: "#fff" }}>
             Get Started
           </Link>
         </div>
@@ -276,14 +276,14 @@ export default function App() {
             Shipwise is a complete SaaS platform for technical education — with dedicated portals for students, mentors, and administrators.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <Link to="/student" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-bold no-underline transition-all hover:scale-105 hover:-translate-y-1"
+            <Link to="/student" className="btn-3d inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-bold no-underline transition-all hover:scale-105 hover:-translate-y-1"
               style={{ background: "var(--color-accent)", color: "#fff", boxShadow: "0 4px 20px var(--color-glow-strong)" }}>
               Start Learning
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
             </Link>
-            <a href="#portals" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-semibold no-underline transition-all hover:scale-105 hover:-translate-y-1"
+            <a href="#portals" className="btn-3d inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-semibold no-underline transition-all hover:scale-105 hover:-translate-y-1"
               style={{ border: "1px solid var(--color-border)", color: "var(--color-text-primary)" }}>
               Explore Portals
             </a>
@@ -344,7 +344,7 @@ export default function App() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {portals.map((p) => (
-              <button key={p.id} onClick={() => setActivePortal(p)} className="glass-card p-6 sm:p-8 block group hover:-translate-y-2 text-left w-full"
+              <button key={p.id} onClick={() => setActivePortal(p)} className="btn-3d glass-card p-6 sm:p-8 block group hover:-translate-y-2 text-left w-full"
                 style={{ borderTop: `3px solid ${p.color}`, cursor: "pointer" }}>
                 <h3 className="text-xl font-bold mb-3 group-hover:opacity-80 transition-opacity" style={{ color: p.color }}>{p.title}</h3>
                 <p className="text-sm mb-5 leading-relaxed" style={{ color: "var(--color-text-muted)" }}>{p.desc}</p>
@@ -373,11 +373,11 @@ export default function App() {
               Join thousands of learners, mentors, and institutions who trust Shipwise for their technical education needs.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link to="/student" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-bold no-underline transition-all hover:scale-105"
+              <Link to="/student" className="btn-3d inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-bold no-underline transition-all hover:scale-105"
                 style={{ background: "var(--color-accent)", color: "#fff" }}>
                 Start Learning Free
               </Link>
-              <Link to="/mentor" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-semibold no-underline transition-all hover:scale-105"
+              <Link to="/mentor" className="btn-3d inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-semibold no-underline transition-all hover:scale-105"
                 style={{ border: "1px solid var(--color-border)", color: "var(--color-text-primary)" }}>
                 Become a Mentor
               </Link>
