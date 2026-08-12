@@ -2,37 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Premium design tokens ───────────────────────────────────────────────── */
 :root {
-  --color-bg-primary: #F8FAFC;
-  --color-bg-secondary: #F0FDFA;
+  --color-bg-primary: #F4F9FC;
+  --color-bg-secondary: #EAF7F4;
   --color-bg-card: #FFFFFF;
-  --color-text-primary: #262626;
-  --color-text-secondary: #64748B;
-  --color-text-muted: #64748B;
-  --color-border: rgba(29, 120, 116, 0.18);
-  --color-accent: #1D7874;
-  --color-accent-strong: #1D7874;
-  --color-accent-light: rgba(29, 120, 116, 0.1);
-  --color-glow: rgba(29, 120, 116, 0.2);
-  --color-glow-strong: rgba(29, 120, 116, 0.35);
+  --color-text-primary: #0F1B2D;
+  --color-text-secondary: #50637F;
+  --color-text-muted: #7486A3;
+  --color-border: rgba(14, 159, 142, 0.16);
+  --color-accent: #0E9F8E;
+  --color-accent-strong: #0B8A7D;
+  --color-accent-light: rgba(14, 159, 142, 0.12);
+  --color-glow: rgba(14, 159, 142, 0.22);
+  --color-glow-strong: rgba(14, 159, 142, 0.38);
+  --color-grad-a: #0E9F8E;
+  --color-grad-b: #3D8BFD;
+  --color-grad-c: #7C6CF0;
 }
 
 .dark {
-  --color-bg-primary: #0F172A;
-  --color-bg-secondary: #131E33;
-  --color-bg-card: #1E293B;
-  --color-text-primary: #F1F5F9;
-  --color-text-secondary: #B6C2D4;
-  --color-text-muted: #94A3B8;
-  --color-border: rgba(148, 163, 184, 0.16);
-  --color-accent: #2BB3AB;
-  --color-accent-strong: #1FA09A;
-  --color-accent-light: rgba(43, 179, 171, 0.12);
-  --color-glow: rgba(43, 179, 171, 0.1);
-  --color-glow-strong: rgba(43, 179, 171, 0.22);
+  --color-bg-primary: #060B16;
+  --color-bg-secondary: #0A1322;
+  --color-bg-card: #0E1A2C;
+  --color-text-primary: #E7EEFA;
+  --color-text-secondary: #9DAEC8;
+  --color-text-muted: #7184A3;
+  --color-border: rgba(140, 178, 216, 0.14);
+  --color-accent: #2DD4BF;
+  --color-accent-strong: #14B8A6;
+  --color-accent-light: rgba(45, 212, 191, 0.14);
+  --color-glow: rgba(45, 212, 191, 0.13);
+  --color-glow-strong: rgba(45, 212, 191, 0.28);
+  --color-grad-a: #2DD4BF;
+  --color-grad-b: #60A5FA;
+  --color-grad-c: #A78BFA;
 }
 
 html { scroll-behavior: smooth; }
+section[id] { scroll-margin-top: 88px; }
 
 /* Lenis smooth scroll: neutralize native smooth-behavior while active so
    only Lenis drives scrolling (no conflicting instant jumps). */
@@ -47,13 +55,84 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+::selection {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* Slim, brand-tinted scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--color-grad-a), var(--color-grad-c));
+  border-radius: 999px;
+  border: 2px solid var(--color-bg-primary);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--color-accent-strong), var(--color-grad-c));
+}
+
+/* ─── App shell: layered gradient backdrop ────────────────────────────────── */
+.bg-shell {
+  background: var(--color-bg-primary);
+  background:
+    radial-gradient(1100px 520px at 15% -5%, var(--color-glow) 0%, transparent 55%),
+    radial-gradient(950px 500px at 92% 4%, color-mix(in srgb, var(--color-grad-c) 8%, transparent) 0%, transparent 55%),
+    linear-gradient(180deg, var(--color-bg-primary) 0%, var(--color-bg-secondary) 100%);
+}
+.dark .bg-shell {
+  background: var(--color-bg-primary);
+  background:
+    radial-gradient(1100px 520px at 15% -5%, var(--color-glow) 0%, transparent 55%),
+    radial-gradient(950px 500px at 92% 4%, rgba(124, 108, 240, 0.08) 0%, transparent 55%),
+    linear-gradient(180deg, var(--color-bg-primary) 0%, var(--color-bg-secondary) 100%);
+}
+
+/* ─── Gradient text ───────────────────────────────────────────────────────── */
+.text-gradient {
+  background: linear-gradient(92deg, var(--color-grad-a) 0%, var(--color-grad-b) 55%, var(--color-grad-c) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ─── Glass cards ─────────────────────────────────────────────────────────── */
 .glass-card {
-  background: var(--color-bg-card);
+  position: relative;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--color-bg-card) 98%, #ffffff), var(--color-bg-card));
   border: 1px solid var(--color-border);
-  border-radius: 16px;
+  border-radius: 18px;
+  box-shadow:
+    0 1px 2px rgba(2, 6, 23, 0.04),
+    0 8px 24px -10px rgba(2, 6, 23, 0.10);
   transition: all 0.3s ease;
 }
 
+.dark .glass-card {
+  background: linear-gradient(165deg, rgba(20, 33, 58, 0.82), rgba(10, 19, 36, 0.92));
+  border-color: rgba(140, 178, 216, 0.14);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.35),
+    0 10px 30px -14px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.glass-card:hover {
+  box-shadow:
+    0 18px 44px -14px var(--color-glow-strong),
+    0 1px 2px rgba(2, 6, 23, 0.05);
+  border-color: color-mix(in srgb, var(--color-accent) 42%, var(--color-border));
+}
+
+.dark .glass-card:hover {
+  box-shadow:
+    0 20px 46px -16px rgba(0, 0, 0, 0.6),
+    0 0 0 1px var(--color-accent-light);
+  border-color: rgba(45, 212, 191, 0.32);
+}
+
+/* ─── 3D buttons ──────────────────────────────────────────────────────────── */
 .btn-3d {
   box-shadow: 0 1px 2px rgba(2, 6, 23, 0.06), 0 4px 12px rgba(2, 6, 23, 0.10);
   transition: all 0.25s ease;
@@ -71,16 +150,222 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35), 0 8px 18px rgba(0, 0, 0, 0.38);
 }
 
-.glass-card:hover {
-  box-shadow: 0 8px 32px var(--color-glow);
-  border-color: var(--color-accent);
+/* Persistent gradient glow for primary CTAs */
+.btn-glow {
+  box-shadow: 0 8px 26px -8px var(--color-glow-strong), 0 1px 2px rgba(2, 6, 23, 0.06);
+}
+.btn-glow:hover {
+  box-shadow: 0 14px 38px -8px var(--color-glow-strong), 0 2px 6px rgba(2, 6, 23, 0.12);
+}
+.dark .btn-glow {
+  box-shadow: 0 10px 30px -8px var(--color-glow-strong), 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-.dark .glass-card:hover {
-  box-shadow: 0 6px 20px rgba(2, 6, 23, 0.45);
-  border-color: rgba(148, 163, 184, 0.35);
+/* Ghost / outlined buttons */
+.btn-ghost {
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+.btn-ghost:hover {
+  background: var(--color-accent-light);
+  border-color: var(--color-accent) !important;
+  color: var(--color-accent);
 }
 
+/* ─── Section badge pill ──────────────────────────────────────────────────── */
+.badge-pill {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-accent-light);
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--color-grad-a) 16%, transparent),
+    color-mix(in srgb, var(--color-grad-c) 12%, transparent)
+  );
+  color: var(--color-accent);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 16px -8px var(--color-glow-strong);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.badge-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 25%, rgba(255, 255, 255, 0.35) 48%, transparent 72%);
+  transform: translateX(-120%);
+  animation: sw-shine 4.8s ease-in-out infinite;
+  pointer-events: none;
+}
+.dark .badge-shine {
+  background: linear-gradient(110deg, transparent 25%, rgba(255, 255, 255, 0.12) 48%, transparent 72%);
+}
+
+/* ─── Hero decorative blobs ───────────────────────────────────────────────── */
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.5;
+  pointer-events: none;
+  animation: sw-blob 16s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.hero-blob-a {
+  width: 420px;
+  height: 420px;
+  top: 6%;
+  left: -140px;
+  background: radial-gradient(circle, var(--color-grad-a), transparent 70%);
+}
+.hero-blob-b {
+  width: 480px;
+  height: 480px;
+  bottom: 2%;
+  right: -160px;
+  background: radial-gradient(circle, var(--color-grad-c), transparent 70%);
+  animation-delay: -7s;
+}
+.dark .hero-blob { opacity: 0.34; }
+
+@media (max-width: 767px) {
+  .hero-blob-a { width: 280px; height: 280px; left: -110px; }
+  .hero-blob-b { width: 320px; height: 320px; right: -120px; }
+}
+
+/* ─── Feature cards ───────────────────────────────────────────────────────── */
+.feature-icon {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  border-radius: 16px;
+  background: var(--color-accent-light);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-grad-a) 18%, transparent),
+    color-mix(in srgb, var(--color-grad-c) 12%, transparent)
+  );
+  border: 1px solid var(--color-border);
+  box-shadow: 0 6px 18px -8px var(--color-glow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.feature-card:hover .feature-icon {
+  transform: translateY(-3px) scale(1.06) rotate(-4deg);
+  box-shadow: 0 12px 28px -8px var(--color-glow-strong);
+}
+
+/* ─── Portal cards ────────────────────────────────────────────────────────── */
+.portal-card {
+  overflow: hidden;
+}
+.portal-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--color-accent-light);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--portal-accent) 12%, transparent),
+    transparent 58%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.portal-card:hover::after { opacity: 1; }
+.portal-card:hover {
+  box-shadow:
+    0 20px 46px -16px var(--portal-accent),
+    0 0 0 1px color-mix(in srgb, var(--portal-accent) 45%, transparent);
+}
+.dark .portal-card:hover {
+  box-shadow:
+    0 22px 48px -16px rgba(0, 0, 0, 0.6),
+    0 0 0 1px color-mix(in srgb, var(--portal-accent) 55%, transparent);
+}
+
+/* ─── About / CTA card ────────────────────────────────────────────────────── */
+.cta-card {
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--color-grad-a) 8%, var(--color-bg-card)),
+    var(--color-bg-card)
+  );
+}
+.dark .cta-card {
+  background: linear-gradient(
+    165deg,
+    rgba(20, 40, 66, 0.9),
+    rgba(10, 19, 36, 0.94)
+  );
+}
+.cta-card::before {
+  content: "";
+  position: absolute;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  top: -230px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, var(--color-glow) 0%, transparent 65%);
+  pointer-events: none;
+}
+.cta-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -45%;
+  width: 38%;
+  height: 100%;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+  transform: skewX(-18deg) translateX(-100%);
+  animation: sw-sheen 6.5s ease-in-out infinite;
+  pointer-events: none;
+}
+.dark .cta-card::after {
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+}
+
+/* ─── Login modal ─────────────────────────────────────────────────────────── */
+.modal-card {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-grad-a) 5%, var(--color-bg-card)),
+    var(--color-bg-card)
+  );
+  box-shadow: 0 30px 70px -20px rgba(2, 6, 23, 0.4);
+}
+.dark .modal-card {
+  background: linear-gradient(180deg, rgba(20, 33, 58, 0.96), rgba(10, 19, 36, 0.98));
+  box-shadow: 0 30px 70px -20px rgba(0, 0, 0, 0.65);
+}
+
+/* ─── Footer ──────────────────────────────────────────────────────────────── */
+.site-footer { position: relative; }
+.site-footer::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-grad-a), var(--color-grad-c), transparent);
+  opacity: 0.55;
+}
+.social-link {
+  color: var(--color-text-muted);
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+.social-link:hover {
+  color: var(--color-accent);
+  transform: translateY(-1px);
+}
+
+/* ─── Animated counters / stats ───────────────────────────────────────────── */
 .stats-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -142,8 +427,8 @@ body {
 }
 
 .dark .skew-stat-card {
-  background: var(--color-bg-card);
-  border-color: rgba(148, 163, 184, 0.14);
+  background: linear-gradient(165deg, rgba(20, 33, 58, 0.85), rgba(10, 19, 36, 0.95));
+  border-color: rgba(140, 178, 216, 0.14);
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.35),
     0 4px 10px rgba(0, 0, 0, 0.26),
@@ -151,8 +436,8 @@ body {
 }
 
 .dark .skew-stat::before {
-  background: rgba(30, 41, 59, 0.9);
-  border-color: rgba(148, 163, 184, 0.1);
+  background: rgba(14, 26, 46, 0.9);
+  border-color: rgba(140, 178, 216, 0.1);
 }
 
 .skew-stat-content {
@@ -165,7 +450,10 @@ body {
   letter-spacing: -0.02em;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
-  color: var(--color-accent);
+  background: linear-gradient(120deg, var(--color-grad-a), var(--color-grad-b) 60%, var(--color-grad-c));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .skew-stat-suffix {
@@ -183,4 +471,29 @@ body {
 @media (min-width: 640px) {
   .skew-stat-card { padding: 28px 20px; }
   .skew-stat-value { font-size: 34px; }
+}
+
+/* ─── Keyframes ───────────────────────────────────────────────────────────── */
+@keyframes sw-shine {
+  0%, 55% { transform: translateX(-120%); }
+  85%, 100% { transform: translateX(230%); }
+}
+
+@keyframes sw-sheen {
+  0%, 62% { transform: skewX(-18deg) translateX(-100%); }
+  95%, 100% { transform: skewX(-18deg) translateX(380%); }
+}
+
+@keyframes sw-blob {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(42px, -28px) scale(1.12); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-blob,
+  .badge-shine,
+  .cta-card::after,
+  .feature-icon {
+    animation: none !important;
+  }
 }

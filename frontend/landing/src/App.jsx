@@ -49,9 +49,8 @@ function LoginModal({ portalId, portalTitle, portalColor, onClose }) {
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="w-full max-w-sm rounded-2xl p-8 relative"
+        className="w-full max-w-sm rounded-2xl p-8 relative modal-card"
         style={{
-          background: "var(--color-bg-card)",
           border: "1px solid var(--color-border)",
           borderTop: `3px solid ${portalColor}`,
         }}
@@ -269,7 +268,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={
-        <div style={{ backgroundColor: "var(--color-bg-primary)", color: "var(--color-text-primary)", minHeight: "100vh" }}>
+        <div className="bg-shell" style={{ color: "var(--color-text-primary)", minHeight: "100vh" }}>
 
       {/* Login Modal */}
       {activePortal && (
@@ -284,7 +283,7 @@ export default function App() {
       <nav
         className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-8 py-4"
         style={{
-          background: dark ? "rgba(15,23,42,0.9)" : "rgba(248,250,252,0.9)",
+          background: dark ? "linear-gradient(180deg, rgba(8,12,24,0.82), rgba(8,12,24,0.55))" : "linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.66))",
           backdropFilter: "blur(18px)",
           borderBottom: "1px solid var(--color-border)",
         }}
@@ -319,7 +318,7 @@ export default function App() {
 
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-6 md:hidden" style={{ background: dark ? "rgba(15,23,42,0.98)" : "rgba(248,250,252,0.98)", backdropFilter: "blur(20px)" }}>
+        <div className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-6 md:hidden" style={{ background: dark ? "rgba(8,12,24,0.98)" : "rgba(255,255,255,0.96)", backdropFilter: "blur(20px)" }}>
           {["Features", "Portals", "About", "Contact"].map((item) => (
             <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMenuOpen(false)}
               className="text-lg font-semibold no-underline transition-all duration-300 border-b-2 border-transparent hover:border-[var(--color-accent)] pb-0.5" style={{ color: "var(--color-text-primary)" }}>
@@ -337,28 +336,29 @@ export default function App() {
         <div className="absolute inset-0 pointer-events-none" style={{
           background: `radial-gradient(circle at 20% 50%, var(--color-glow) 0%, transparent 50%), radial-gradient(circle at 80% 50%, var(--color-glow) 0%, transparent 50%)`,
         }} />
+        <div className="hero-blob hero-blob-a" aria-hidden="true" />
+        <div className="hero-blob hero-blob-b" aria-hidden="true" />
         <div className="relative z-10 max-w-4xl mx-auto">
-          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-6"
-            style={{ background: "var(--color-accent-light)", color: "var(--color-accent)", border: "1px solid var(--color-border)" }}>
-            🚀 Next-Gen Learning Platform
+          <span className="badge-pill inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-6">
+            <span className="badge-shine" aria-hidden="true" />🚀 Next-Gen Learning Platform
           </span>
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight leading-none mb-6">
             Navigate Knowledge <br />
-            <span style={{ color: "var(--color-accent)" }}>Wisely</span>
+            <span className="text-gradient">Wisely</span>
           </h1>
           <p className="text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
             Shipwise is a complete SaaS platform for technical education — with dedicated portals for students, mentors, and administrators.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <Link to="/student" className="btn-3d inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-bold no-underline transition-all hover:scale-105 hover:-translate-y-1"
-              style={{ background: "var(--color-accent-strong)", color: "#fff", boxShadow: "0 4px 20px var(--color-glow-strong)" }}>
+            <Link to="/student" className="btn-3d btn-glow inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-bold no-underline transition-all hover:scale-105 hover:-translate-y-1"
+              style={{ background: "var(--color-accent-strong)", color: "#fff" }}>
               Start Learning
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
             </Link>
-            <a href="#portals" className="btn-3d inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-semibold no-underline transition-all hover:scale-105 hover:-translate-y-1"
-              style={{ border: "1px solid var(--color-border)", color: "var(--color-text-primary)" }}>
+            <a href="#portals" className="btn-3d btn-ghost inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-semibold no-underline transition-all hover:scale-105 hover:-translate-y-1"
+              style={{ color: "var(--color-text-primary)" }}>
               Explore Portals
             </a>
           </div>
@@ -370,9 +370,8 @@ export default function App() {
       <section id="features" className="px-4 py-20 sm:py-28">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14">
-            <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-4"
-              style={{ background: "var(--color-accent-light)", color: "var(--color-accent)", border: "1px solid var(--color-border)" }}>
-              Platform Features
+            <span className="badge-pill inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-4">
+              <span className="badge-shine" aria-hidden="true" />Platform Features
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4">Everything You Need to Succeed</h2>
             <p className="text-base sm:text-lg max-w-xl mx-auto" style={{ color: "var(--color-text-secondary)" }}>
@@ -381,8 +380,8 @@ export default function App() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((f) => (
-              <div key={f.title} className="glass-card p-6 sm:p-8 hover:-translate-y-1">
-                <div className="text-3xl mb-4">{f.icon}</div>
+              <div key={f.title} className="glass-card feature-card p-6 sm:p-8 hover:-translate-y-1">
+                <div className="feature-icon mb-5">{f.icon}</div>
                 <h3 className="text-lg font-bold mb-2">{f.title}</h3>
                 <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>{f.desc}</p>
               </div>
@@ -395,9 +394,8 @@ export default function App() {
       <section id="portals" className="px-4 py-20 sm:py-28">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14">
-            <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-4"
-              style={{ background: "var(--color-accent-light)", color: "var(--color-accent)", border: "1px solid var(--color-border)" }}>
-              Three Portals
+            <span className="badge-pill inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-4">
+              <span className="badge-shine" aria-hidden="true" />Three Portals
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4">One Platform, Three Perspectives</h2>
             <p className="text-base sm:text-lg max-w-xl mx-auto" style={{ color: "var(--color-text-secondary)" }}>
@@ -406,8 +404,8 @@ export default function App() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {portals.map((p) => (
-              <button key={p.id} onClick={() => setActivePortal(p)} className="btn-3d glass-card p-6 sm:p-8 block group hover:-translate-y-2 text-left w-full"
-                style={{ borderTop: `3px solid ${p.color}`, cursor: "pointer" }}>
+              <button key={p.id} onClick={() => setActivePortal(p)} className="btn-3d glass-card portal-card p-6 sm:p-8 block group hover:-translate-y-2 text-left w-full"
+                style={{ borderTop: `3px solid ${p.color}`, cursor: "pointer", ["--portal-accent"]: p.color }}>
                 <h3 className="text-xl font-bold mb-3 group-hover:opacity-80 transition-opacity" style={{ color: p.color }}>{p.title}</h3>
                 <p className="text-sm mb-5 leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>{p.desc}</p>
                 <div className="flex flex-wrap gap-2 mb-6">
@@ -428,19 +426,19 @@ export default function App() {
       {/* About / CTA */}
       <section id="about" className="px-4 py-20 sm:py-28">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="glass-card p-10 sm:p-16">
+          <div className="glass-card cta-card p-10 sm:p-16">
             <span className="text-5xl mb-4 block">🧭</span>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4">Ready to Navigate Knowledge Wisely?</h2>
             <p className="text-base sm:text-lg max-w-lg mx-auto mb-8" style={{ color: "var(--color-text-secondary)" }}>
               Join thousands of learners, mentors, and institutions who trust Shipwise for their technical education needs.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link to="/student" className="btn-3d inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-bold no-underline transition-all hover:scale-105"
+              <Link to="/student" className="btn-3d btn-glow inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-bold no-underline transition-all hover:scale-105"
                 style={{ background: "var(--color-accent-strong)", color: "#fff" }}>
                 Start Learning Free
               </Link>
-              <Link to="/mentor" className="btn-3d inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-semibold no-underline transition-all hover:scale-105"
-                style={{ border: "1px solid var(--color-border)", color: "var(--color-text-primary)" }}>
+              <Link to="/mentor" className="btn-3d btn-ghost inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-semibold no-underline transition-all hover:scale-105"
+                style={{ color: "var(--color-text-primary)" }}>
                 Become a Mentor
               </Link>
             </div>
@@ -449,7 +447,7 @@ export default function App() {
       </section>
 
       {/* Footer */}
-      <footer className="px-4 py-12 border-t" style={{ borderColor: "var(--color-border)" }}>
+      <footer className="site-footer px-4 py-12 border-t" style={{ borderColor: "var(--color-border)" }}>
         <div className="max-w-6xl mx-auto grid grid-cols-2 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div className="col-span-2 sm:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-2 text-lg font-extrabold mb-4">
@@ -491,8 +489,18 @@ export default function App() {
           style={{ borderColor: "var(--color-border)" }}>
           <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>© 2026 Shipwise. All rights reserved.</p>
           <div className="flex gap-4">
-            {["GitHub", "Twitter", "LinkedIn", "YouTube"].map((s) => (
-              <a key={s} href="#" className="text-xs no-underline font-medium transition-colors hover:opacity-80" style={{ color: "var(--color-text-muted)" }}>{s}</a>
+            {[
+              { name: "GitHub", d: "M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.387.6.113.82-.26.82-.577 0-.285-.01-1.04-.015-2.04-3.338.726-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.082-.73.082-.73 1.205.085 1.84 1.237 1.84 1.237 1.07 1.834 2.807 1.304 3.492.997.108-.775.418-1.305.762-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.468-2.38 1.235-3.22-.123-.303-.535-1.523.117-3.176 0 0 1.008-.322 3.3 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.29-1.552 3.297-1.23 3.297-1.23.653 1.653.24 2.873.118 3.176.77.84 1.233 1.91 1.233 3.22 0 4.61-2.803 5.625-5.475 5.92.43.37.813 1.102.813 2.22 0 1.606-.015 2.896-.015 3.293 0 .32.216.694.825.576C20.565 21.796 24 17.297 24 12c0-6.63-5.37-12-12-12z" },
+              { name: "Twitter", d: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" },
+              { name: "LinkedIn", d: "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z" },
+              { name: "YouTube", d: "M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" },
+            ].map((s) => (
+              <a key={s.name} href="#" className="social-link text-xs no-underline font-medium inline-flex items-center gap-1.5 transition-all">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d={s.d} />
+                </svg>
+                {s.name}
+              </a>
             ))}
           </div>
         </div>
