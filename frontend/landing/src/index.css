@@ -34,6 +34,12 @@
 
 html { scroll-behavior: smooth; }
 
+/* Lenis smooth scroll: neutralize native smooth-behavior while active so
+   only Lenis drives scrolling (no conflicting instant jumps). */
+html.lenis,
+html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background-color: var(--color-bg-primary);
