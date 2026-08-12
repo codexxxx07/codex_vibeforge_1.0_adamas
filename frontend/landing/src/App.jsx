@@ -388,8 +388,8 @@ export default function App() {
 
       {/* Footer */}
       <footer className="px-4 py-12 border-t" style={{ borderColor: "var(--color-border)" }}>
-        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div>
+        <div className="max-w-6xl mx-auto grid grid-cols-2 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="col-span-2 sm:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-2 text-lg font-extrabold mb-4">
               <span>🧭</span> Ship<span style={{ color: "var(--color-accent)" }}>wise</span>
             </div>
@@ -397,20 +397,33 @@ export default function App() {
               Navigate Knowledge Wisely. A complete SaaS platform for technical education.
             </p>
           </div>
-          {[
-            { title: "Platform", links: [{ label: "Student Portal", to: "/student-portal" }, { label: "Mentor Portal", to: "/mentor-portal" }, { label: "Admin Panel", to: "/admin-panel" }, { label: "Mobile App", to: "/mobile-app" }] },
-            { title: "Resources", links: [{ label: "Help Center", to: "/help-center" }, { label: "Documentation", to: "/documentation" }, { label: "API Status", to: "/api-status" }, { label: "Community", to: "/community" }] },
-            { title: "Company", links: [{ label: "About Us", to: "/about" }, { label: "Careers", to: "/careers" }, { label: "Privacy", to: "/privacy" }, { label: "Terms", to: "/terms" }] },
-          ].map((col) => (
-            <div key={col.title}>
-              <h4 className="text-sm font-bold mb-4" style={{ color: "var(--color-text-primary)" }}>{col.title}</h4>
-              <div className="flex flex-col gap-2.5">
-                {col.links.map((l) => (
-                  <Link key={l.to} to={l.to} className="text-sm no-underline transition-colors hover:opacity-80" style={{ color: "var(--color-text-muted)" }}>{l.label}</Link>
-                ))}
-              </div>
+          <div className="col-span-1 sm:col-span-1 lg:col-span-1">
+            <h4 className="text-sm font-bold mb-4" style={{ color: "var(--color-text-primary)" }}>Platform</h4>
+            <div className="flex flex-col gap-2.5">
+              <Link to="/student-portal" className="text-sm no-underline transition-colors hover:opacity-80" style={{ color: "var(--color-text-muted)" }}>Student Portal</Link>
+              <Link to="/mentor-portal" className="text-sm no-underline transition-colors hover:opacity-80" style={{ color: "var(--color-text-muted)" }}>Mentor Portal</Link>
+              <Link to="/admin-panel" className="text-sm no-underline transition-colors hover:opacity-80" style={{ color: "var(--color-text-muted)" }}>Admin Panel</Link>
+              <Link to="/mobile-app" className="text-sm no-underline transition-colors hover:opacity-80" style={{ color: "var(--color-text-muted)" }}>Mobile App</Link>
             </div>
-          ))}
+          </div>
+          <div className="col-span-1 sm:col-span-1 lg:col-span-1">
+            <h4 className="text-sm font-bold mb-4" style={{ color: "var(--color-text-primary)" }}>Resources</h4>
+            <div className="flex flex-col gap-2.5">
+              <Link to="/help-center" className="text-sm no-underline transition-colors hover:opacity-80" style={{ color: "var(--color-text-muted)" }}>Help Center</Link>
+              <Link to="/documentation" className="text-sm no-underline transition-colors hover:opacity-80" style={{ color: "var(--color-text-muted)" }}>Documentation</Link>
+              <Link to="/api-status" className="text-sm no-underline transition-colors hover:opacity-80" style={{ color: "var(--color-text-muted)" }}>API Status</Link>
+              <Link to="/community" className="text-sm no-underline transition-colors hover:opacity-80" style={{ color: "var(--color-text-muted)" }}>Community</Link>
+            </div>
+          </div>
+          <div className="col-span-2 sm:col-span-2 lg:col-span-1 text-center sm:text-left lg:text-left">
+            <h4 className="text-sm font-bold mb-4" style={{ color: "var(--color-text-primary)" }}>Company</h4>
+            <div className="flex flex-col gap-2.5 items-center sm:items-start lg:items-start">
+              <Link to="/about" className="text-sm no-underline transition-colors hover:opacity-80" style={{ color: "var(--color-text-muted)" }}>About Us</Link>
+              <Link to="/careers" className="text-sm no-underline transition-colors hover:opacity-80" style={{ color: "var(--color-text-muted)" }}>Careers</Link>
+              <Link to="/privacy" className="text-sm no-underline transition-colors hover:opacity-80" style={{ color: "var(--color-text-muted)" }}>Privacy</Link>
+              <Link to="/terms" className="text-sm no-underline transition-colors hover:opacity-80" style={{ color: "var(--color-text-muted)" }}>Terms</Link>
+            </div>
+          </div>
         </div>
         <div className="max-w-6xl mx-auto mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-t"
           style={{ borderColor: "var(--color-border)" }}>
