@@ -40,7 +40,7 @@ export default function Careers() {
               </div>
             </div>
             <button className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all hover:scale-105 flex-shrink-0"
-              style={{ background: "var(--color-accent)", color: "#fff", cursor: "pointer", border: "none" }}>
+              style={{ background: "var(--color-accent-strong)", color: "#fff", cursor: "pointer", border: "none" }}>
               Apply Now
             </button>
           </div>

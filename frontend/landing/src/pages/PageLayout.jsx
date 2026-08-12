@@ -37,7 +37,7 @@ export default function PageLayout({ children }) {
       <nav
         className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-8 py-4"
         style={{
-          background: dark ? "rgba(11,11,24,0.9)" : "rgba(248,250,252,0.9)",
+          background: dark ? "rgba(15,23,42,0.9)" : "rgba(248,250,252,0.9)",
           backdropFilter: "blur(18px)",
           borderBottom: "1px solid var(--color-border)",
         }}
