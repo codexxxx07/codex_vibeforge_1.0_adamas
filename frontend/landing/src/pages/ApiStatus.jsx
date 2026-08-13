@@ -32,7 +32,7 @@ export default function ApiStatus() {
         ].map((service) => (
           <div key={service.name} className="glass-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: service.color }}></span>
+              <span className="status-dot w-3 h-3 rounded-full flex-shrink-0" style={{ background: service.color, "--dot-color": service.color }}></span>
               <span className="font-semibold text-sm">{service.name}</span>
             </div>
             <div className="flex items-center gap-6 text-sm">
