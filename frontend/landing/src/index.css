@@ -28,28 +28,45 @@
 }
 
 /* ─── Dark theme: the same product, a deliberate dark design system ──────────
-   Deep navy canvas, slightly elevated surfaces, bright teal accent. */
+   A controlled surface hierarchy instead of black + gray:
+   Level 0 = page canvas → Level 1 = section surface → Level 2 = card surface
+   → Level 3 = elevated / interactive surface. Every level is a subtle step up
+   from the last, so depth reads through contrast, not through effects. */
 .dark {
-  --color-bg-primary: #0B1120;
-  --color-bg-secondary: #0F182B;
-  --color-bg-card: #131E32;
-  --color-bg-nav: rgba(11, 17, 32, 0.82);
-  --color-text-primary: #EEF2F8;
-  --color-text-secondary: #A3B2C8;
-  --color-text-muted: #7E8CA3;
-  --color-border: rgba(148, 163, 184, 0.14);
-  --color-border-strong: rgba(148, 163, 184, 0.24);
+  /* Level 0 — page canvas (deep navy-black) */
+  --color-bg-primary: #0A101F;
+  /* Level 1 — section surface */
+  --color-bg-secondary: #0E1728;
+  /* Level 2 — card surface */
+  --color-bg-card: #121C30;
+  /* Level 3 — elevated / interactive surface */
+  --color-bg-elevated: #17223C;
+  --color-bg-nav: rgba(10, 16, 31, 0.8);
+
+  /* Text hierarchy: primary → secondary → muted, each a quiet step softer */
+  --color-text-primary: #F1F5FC;
+  --color-text-secondary: #A9B8D0;
+  --color-text-muted: #7D8CA6;
+
+  --color-border: rgba(148, 163, 184, 0.12);
+  --color-border-strong: rgba(148, 163, 184, 0.22);
+
   --color-accent: #3CC6BA;
-  --color-accent-strong: #2DB2A5;
-  --color-accent-light: rgba(60, 198, 186, 0.12);
-  --color-glow: rgba(60, 198, 186, 0.14);
-  --color-glow-strong: rgba(60, 198, 186, 0.28);
-  --color-grid: rgba(148, 163, 184, 0.07);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
-  --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 16px rgba(0, 0, 0, 0.35),
-    0 14px 28px rgba(0, 0, 0, 0.28);
-  --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.45), 0 10px 24px rgba(0, 0, 0, 0.4),
-    0 24px 48px rgba(0, 0, 0, 0.35);
+  --color-accent-strong: #27A89B;
+  --color-accent-light: rgba(60, 198, 186, 0.1);
+  --color-accent-soft: rgba(60, 198, 186, 0.18);
+
+  --color-glow: rgba(60, 198, 186, 0.1);
+  --color-glow-strong: rgba(60, 198, 186, 0.22);
+  --color-grid: rgba(148, 163, 184, 0.06);
+
+  /* Crisp top-edge highlight that makes dark surfaces feel lit, not flat */
+  --card-highlight: rgba(255, 255, 255, 0.035);
+  --card-highlight-strong: rgba(255, 255, 255, 0.06);
+
+  --shadow-sm: 0 1px 2px rgba(2, 6, 16, 0.5);
+  --shadow-md: 0 2px 6px rgba(2, 6, 16, 0.4), 0 10px 24px -8px rgba(2, 6, 16, 0.5);
+  --shadow-lg: 0 4px 12px rgba(2, 6, 16, 0.45), 0 18px 40px -12px rgba(2, 6, 16, 0.6);
 }
 
 html { scroll-behavior: smooth; }
@@ -556,6 +573,135 @@ body {
 .menu-item:nth-child(3) { animation-delay: 0.1s; }
 .menu-item:nth-child(4) { animation-delay: 0.15s; }
 .menu-item:nth-child(5) { animation-delay: 0.2s; }
+
+/* ─── Dark theme polish ──────────────────────────────────────────────────────
+   Everything below is scoped to `.dark` and purely visual. Light theme and the
+   layout, structure, and interactions are untouched. */
+.dark .page-shell {
+  background-image:
+    radial-gradient(ellipse 85% 50% at 50% -8%, rgba(60, 198, 186, 0.06), transparent 62%),
+    radial-gradient(ellipse 55% 38% at 88% 45%, rgba(91, 157, 240, 0.04), transparent 60%),
+    radial-gradient(ellipse 70% 45% at 12% 80%, rgba(60, 198, 186, 0.035), transparent 62%);
+}
+
+/* Navbar: integrated with the page, a soft shadow lifts it off the canvas */
+.dark .site-nav {
+  box-shadow: 0 10px 30px -18px rgba(2, 6, 16, 0.7);
+}
+
+/* Hero: faint centre-top ambient light, then a soft fade into the next section */
+.dark .hero-section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 10%, rgba(60, 198, 186, 0.055), transparent 70%),
+    radial-gradient(ellipse 95% 55% at 50% 118%, rgba(8, 13, 26, 0.5), transparent 72%);
+}
+
+/* Cards: a crisp top highlight + elevated hover surface (hover rule must come
+   before the portal-card hover rule below so the glow survives on hover). */
+.dark .glass-card {
+  background-color: var(--color-bg-card);
+  background-image: linear-gradient(180deg, var(--card-highlight), transparent 34%);
+  box-shadow: inset 0 1px 0 0 var(--card-highlight), var(--shadow-sm);
+}
+
+.dark .glass-card:hover {
+  background-color: var(--color-bg-elevated);
+  background-image: linear-gradient(180deg, var(--card-highlight-strong), transparent 36%);
+  box-shadow: inset 0 1px 0 0 var(--card-highlight-strong), var(--shadow-md);
+}
+
+/* Feature icons: quiet, layered teal chip */
+.dark .feature-icon {
+  background-image: linear-gradient(180deg, var(--color-accent-soft), var(--color-accent-light));
+  border-color: rgba(60, 198, 186, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Portal cards: each carries a whisper of its own accent colour */
+.dark .portal-card {
+  --p-glow: rgba(60, 198, 186, 0.07);
+  background-image:
+    linear-gradient(180deg, var(--card-highlight), transparent 34%),
+    radial-gradient(ellipse 120% 55% at 50% -18%, var(--p-glow), transparent 70%);
+}
+
+.dark .portal-card[data-portal="mentor"] { --p-glow: rgba(251, 191, 36, 0.06); }
+.dark .portal-card[data-portal="admin"] { --p-glow: rgba(253, 230, 138, 0.055); }
+
+.dark .portal-card:hover {
+  background-image:
+    linear-gradient(180deg, var(--card-highlight-strong), transparent 36%),
+    radial-gradient(ellipse 120% 55% at 50% -18%, var(--p-glow), transparent 70%);
+}
+
+.dark .portal-chip {
+  background: rgba(148, 163, 184, 0.07);
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+/* Buttons: gradient depth with a crisp lit top edge */
+.dark .sw-btn {
+  background-image: linear-gradient(180deg, var(--color-accent), var(--color-accent-strong));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), var(--shadow-md);
+}
+
+.dark .sw-btn:hover {
+  background-image: linear-gradient(180deg, #52D6CB, var(--color-accent));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 12px 28px -10px rgba(60, 198, 186, 0.3);
+}
+
+.dark .sw-btn-ghost {
+  background-color: rgba(148, 163, 184, 0.06);
+  background-image: linear-gradient(180deg, var(--card-highlight), transparent 60%);
+}
+
+.dark .icon-btn {
+  background: rgba(148, 163, 184, 0.05);
+}
+
+/* Eyebrows: teal-tinted chip */
+.dark .sw-eyebrow {
+  background-image: linear-gradient(180deg, var(--color-accent-soft), var(--color-accent-light));
+  border-color: rgba(60, 198, 186, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* Stats: refined surface stack */
+.dark .skew-stat-card {
+  background-color: var(--color-bg-card);
+  background-image: linear-gradient(180deg, var(--card-highlight), transparent 40%);
+  border-color: var(--color-border);
+  box-shadow: inset 0 1px 0 var(--card-highlight), var(--shadow-md);
+}
+
+.dark .skew-stat::before {
+  background: rgba(8, 13, 26, 0.85);
+  border-color: var(--color-border);
+}
+
+/* Portals showcase section: a soft band that fades in and out */
+.dark .section-band {
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 28%, rgba(60, 198, 186, 0.04), transparent 66%),
+    linear-gradient(180deg,
+      transparent 0%,
+      var(--color-bg-secondary) 16%,
+      var(--color-bg-secondary) 84%,
+      transparent 100%);
+}
+
+/* Footer: closes the page instead of just stopping */
+.dark footer {
+  background: linear-gradient(180deg, transparent 0%, rgba(14, 23, 40, 0.6) 46%);
+}
 
 /* ─── Reduced motion ───────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {

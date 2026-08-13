@@ -277,7 +277,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={
-        <div style={{ backgroundColor: "var(--color-bg-primary)", color: "var(--color-text-primary)", minHeight: "100vh" }}>
+        <div className="page-shell" style={{ backgroundColor: "var(--color-bg-primary)", color: "var(--color-text-primary)", minHeight: "100vh" }}>
 
       {/* Login Modal */}
       {activePortal && (
@@ -292,7 +292,7 @@ export default function App() {
 
       {/* Navbar */}
       <nav
-        className="fixed top-0 left-0 right-0 z-50"
+        className="site-nav fixed top-0 left-0 right-0 z-50"
         style={{
           background: "var(--color-bg-nav)",
           backdropFilter: "blur(18px)",
@@ -368,7 +368,7 @@ export default function App() {
       )}
 
       {/* Hero */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-4 pt-28 pb-16 text-center relative overflow-hidden">
+      <section className="hero-section min-h-screen flex flex-col items-center justify-center px-4 pt-28 pb-16 text-center relative overflow-hidden">
         <div className="hero-grid" />
         <div className="absolute inset-0 pointer-events-none" style={{
           background: `radial-gradient(circle at 20% 50%, var(--color-glow) 0%, transparent 50%), radial-gradient(circle at 80% 50%, var(--color-glow) 0%, transparent 50%)`,
@@ -432,7 +432,7 @@ export default function App() {
       </section>
 
       {/* Portals */}
-      <section id="portals" className="px-4 py-20 sm:py-28">
+      <section id="portals" className="section-band px-4 py-20 sm:py-28">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <span className="sw-eyebrow mb-5">

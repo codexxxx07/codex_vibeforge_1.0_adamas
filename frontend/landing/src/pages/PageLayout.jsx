@@ -16,7 +16,7 @@ export default function PageLayout({ children }) {
   return (
     <div style={{ backgroundColor: "var(--color-bg-primary)", color: "var(--color-text-primary)", minHeight: "100vh" }}>
       <nav
-        className="fixed top-0 left-0 right-0 z-50"
+        className="site-nav fixed top-0 left-0 right-0 z-50"
         style={{
           background: "var(--color-bg-nav)",
           backdropFilter: "blur(18px)",
