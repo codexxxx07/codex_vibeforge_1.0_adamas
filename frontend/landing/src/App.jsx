@@ -49,7 +49,7 @@ function LoginModal({ portalId, portalTitle, portalColor, onClose }) {
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="w-full max-w-sm rounded-2xl p-8 relative"
+        className="glass-modal w-full max-w-sm rounded-2xl p-8 relative"
         style={{
           background: "var(--color-bg-card)",
           border: "1px solid var(--color-border)",
@@ -133,6 +133,7 @@ function ThemeToggle() {
       onClick={toggle}
       className="w-9 h-9 rounded-lg flex items-center justify-center border transition-all duration-300 hover:scale-110 hover:rotate-12"
       style={{
+        background: "var(--color-btn-glass, transparent)",
         borderColor: "var(--color-border)",
         color: "var(--color-text-muted)",
       }}
@@ -195,7 +196,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={
-        <div style={{ backgroundColor: "var(--color-bg-primary)", color: "var(--color-text-primary)", minHeight: "100vh" }}>
+        <div className="landing-page" style={{ backgroundColor: "var(--color-bg-primary)", color: "var(--color-text-primary)", minHeight: "100vh" }}>
 
       {/* Login Modal */}
       {activePortal && (
@@ -208,9 +209,9 @@ export default function App() {
       )}
       {/* Navbar */}
       <nav
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-8 py-4"
+        className="landing-nav fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-8 py-4"
         style={{
-          background: dark ? "rgba(11,11,24,0.9)" : "rgba(248,250,252,0.9)",
+          background: dark ? "rgba(255,255,255,0.05)" : "rgba(248,250,252,0.9)",
           backdropFilter: "blur(18px)",
           borderBottom: "1px solid var(--color-border)",
         }}
@@ -228,7 +229,7 @@ export default function App() {
           ))}
           <ThemeToggle />
           <Link to="/student" className="text-sm font-bold px-5 py-2 rounded-lg no-underline transition-all hover:scale-105"
-            style={{ background: "var(--color-accent)", color: "#fff" }}>
+            style={{ background: "var(--color-cta-bg, var(--color-accent))", color: "var(--color-cta-text, #fff)" }}>
             Get Started
           </Link>
         </div>
@@ -245,14 +246,14 @@ export default function App() {
 
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-6 md:hidden" style={{ background: dark ? "rgba(11,11,24,0.98)" : "rgba(248,250,252,0.98)", backdropFilter: "blur(20px)" }}>
+        <div className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-6 md:hidden" style={{ background: dark ? "rgba(0,0,0,0.92)" : "rgba(248,250,252,0.98)", backdropFilter: "blur(20px)" }}>
           {["Features", "Portals", "About", "Contact"].map((item) => (
             <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMenuOpen(false)}
               className="text-lg font-semibold no-underline transition-all duration-300 border-b-2 border-transparent hover:border-[var(--color-accent)] pb-0.5" style={{ color: "var(--color-text-primary)" }}>
               {item}
             </a>
           ))}
-          <Link to="/student" className="text-base font-bold px-6 py-3 rounded-lg no-underline" style={{ background: "var(--color-accent)", color: "#fff" }}>
+          <Link to="/student" className="text-base font-bold px-6 py-3 rounded-lg no-underline" style={{ background: "var(--color-cta-bg, var(--color-accent))", color: "var(--color-cta-text, #fff)" }}>
             Get Started
           </Link>
         </div>
@@ -276,15 +277,15 @@ export default function App() {
             Shipwise is a complete SaaS platform for technical education — with dedicated portals for students, mentors, and administrators.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <Link to="/student" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-bold no-underline transition-all hover:scale-105 hover:-translate-y-1"
-              style={{ background: "var(--color-accent)", color: "#fff", boxShadow: "0 4px 20px var(--color-glow-strong)" }}>
+            <Link to="/student" className="landing-cta inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-bold no-underline transition-all hover:scale-105 hover:-translate-y-1"
+              style={{ background: "var(--color-cta-bg, var(--color-accent))", color: "var(--color-cta-text, #fff)", boxShadow: "0 4px 20px var(--color-glow-strong)" }}>
               Start Learning
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
             </Link>
-            <a href="#portals" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-semibold no-underline transition-all hover:scale-105 hover:-translate-y-1"
-              style={{ border: "1px solid var(--color-border)", color: "var(--color-text-primary)" }}>
+            <a href="#portals" className="landing-btn-secondary inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-semibold no-underline transition-all hover:scale-105 hover:-translate-y-1"
+              style={{ border: "1px solid var(--color-border)", background: "var(--color-btn-glass, transparent)", color: "var(--color-text-primary)" }}>
               Explore Portals
             </a>
           </div>
@@ -366,19 +367,19 @@ export default function App() {
       {/* About / CTA */}
       <section id="about" className="px-4 py-20 sm:py-28">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="glass-card p-10 sm:p-16">
+          <div className="glass-card landing-card-primary p-10 sm:p-16">
             <span className="text-5xl mb-4 block">🧭</span>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4">Ready to Navigate Knowledge Wisely?</h2>
             <p className="text-base sm:text-lg max-w-lg mx-auto mb-8" style={{ color: "var(--color-text-muted)" }}>
               Join thousands of learners, mentors, and institutions who trust Shipwise for their technical education needs.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link to="/student" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-bold no-underline transition-all hover:scale-105"
-                style={{ background: "var(--color-accent)", color: "#fff" }}>
+              <Link to="/student" className="landing-cta inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-bold no-underline transition-all hover:scale-105"
+                style={{ background: "var(--color-cta-bg, var(--color-accent))", color: "var(--color-cta-text, #fff)" }}>
                 Start Learning Free
               </Link>
-              <Link to="/mentor" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-semibold no-underline transition-all hover:scale-105"
-                style={{ border: "1px solid var(--color-border)", color: "var(--color-text-primary)" }}>
+              <Link to="/mentor" className="landing-btn-secondary inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-semibold no-underline transition-all hover:scale-105"
+                style={{ border: "1px solid var(--color-border)", background: "var(--color-btn-glass, transparent)", color: "var(--color-text-primary)" }}>
                 Become a Mentor
               </Link>
             </div>
