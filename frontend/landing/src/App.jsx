@@ -21,6 +21,7 @@ import {
   ChartIcon,
   CloseIcon,
   CompassIcon,
+  CopyIcon,
   GitBranchIcon,
   GithubIcon,
   GraduationIcon,
@@ -137,6 +138,12 @@ function LoginModal({ portalId, portalTitle, portalColor, accent, onClose }) {
             Login
           </button>
         </form>
+
+        <DemoCredentials
+          portalId={portalId}
+          ink={portalColor}
+          chip={`color-mix(in srgb, ${accent} 14%, transparent)`}
+        />
       </div>
     </div>
   );
@@ -148,6 +155,72 @@ function ThemeToggle() {
     <button onClick={toggle} className="icon-btn" aria-label="Toggle theme">
       {dark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
     </button>
+  );
+}
+
+// ─── Demo credential copy helpers ────────────────────────────────────────────
+function copyText(text) {
+  if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
+  return new Promise((resolve, reject) => {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand("copy");
+      resolve();
+    } catch (err) {
+      reject(err);
+    } finally {
+      document.body.removeChild(ta);
+    }
+  });
+}
+
+function DemoCredentialRow({ label, value }) {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    copyText(value)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1600);
+      })
+      .catch(() => {});
+  }
+
+  return (
+    <div className="portal-cred-row" onClick={(e) => e.stopPropagation()}>
+      <span className="portal-cred-label">{label}</span>
+      <span
+        className="portal-cred-value"
+        role="button"
+        tabIndex={-1}
+        title={`Copy ${label.toLowerCase()}`}
+        aria-label={`Copy ${label.toLowerCase()}: ${value}`}
+        onClick={handleCopy}
+      >
+        <code>{value}</code>
+        <span className="portal-cred-copy" aria-hidden="true">
+          {copied ? "Copied!" : <CopyIcon size={12} />}
+        </span>
+      </span>
+    </div>
+  );
+}
+
+function DemoCredentials({ portalId, ink, chip }) {
+  const cred = CREDENTIALS[portalId];
+  return (
+    <div className="portal-creds" style={{ "--p-ink": ink, "--p-chip": chip }}>
+      <div className="portal-creds-title">Demo Credentials</div>
+      <DemoCredentialRow label="Email" value={cred.email} />
+      <DemoCredentialRow label="Password" value={cred.password} />
+    </div>
   );
 }
 
