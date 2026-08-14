@@ -109,27 +109,6 @@ Shipwise is a complete SaaS platform for technical education. Students learn, me
 
 ## 3. Platform Architecture
 
-Shipwise is a **single React application** that ships the landing page and all three portals together. The landing page acts as the router's entry point; each portal mounts only after the matching demo role is authenticated.
-
-```mermaid
-flowchart TD
-    A[Landing Page] --> B{Choose a Portal}
-    B --> C[Student Login Modal]
-    B --> D[Mentor Login Modal]
-    B --> E[Admin Login Modal]
-    C -->|student@college.edu / student123| F[Student Portal<br/>19 modules]
-    D -->|mentor@college.edu / mentor123| G[Mentor Portal<br/>9 modules]
-    E -->|admin@college.edu / admin123| H[Admin Panel<br/>9 modules]
-    F --> F1[Auth check: localStorage + URL role]
-    G --> G1[Auth check: localStorage + URL role]
-    H --> H1[Auth check: localStorage + URL role]
-    F1 -->|valid| F2[Dashboard shell: Sidebar + Header + page]
-    G1 -->|valid| G2[Dashboard shell: Sidebar + Header + page]
-    H1 -->|valid| H2[Dashboard shell: Sidebar + Header + page]
-    F1 -->|invalid| A
-    G1 -->|invalid| A
-    H1 -->|invalid| A
-```
 
 **Routing map** (`src/App.jsx`):
 
